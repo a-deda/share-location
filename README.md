@@ -45,3 +45,4 @@ Een functie die niet nodig is, maar het product iets completer maakt is ten eers
 
 Daarnaast is het wenselijk om voor het uitschakelen van de locatie-tracking om een wachtwoord te vragen. Kwaadwillenden, die de telefoon van een ander in handen zouden kunnen hebben, kunnen zo worden opgespoord.
 
+<i>De schetsen voor de applicatie staan in /doc.</i>
