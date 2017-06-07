@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="nl.adeda.sharelocation.KaartFragment">
+
+    <fragment
+        android:id="@+id/kaart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.35"
+        class="com.google.android.gms.maps.SupportMapFragment"/>
+
+    <ListView
+        android:id="@+id/locaties_contacten_lijst"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.65"
+        android:backgroundTint="@color/colorPrimary"/>
+
+</LinearLayout>
