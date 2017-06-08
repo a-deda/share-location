@@ -2,8 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_contact_toevoegen"
+        android:id="@+id/action_contact_back"
         android:orderInCategory="100"
-        android:title="Toevoegen"
+        android:icon="@drawable/ic_arrow_back_black_24dp"
+        android:title="Terug"
         app:showAsAction="always"/>
 </menu>
