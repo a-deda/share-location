@@ -50,5 +50,5 @@ Daarnaast is het wenselijk om voor het uitschakelen van de locatie-tracking om e
 ![alt text](https://github.com/a-deda/share-location/blob/master/doc/2-main-request.png)
 ![alt text](https://github.com/a-deda/share-location/blob/master/doc/3-side-panel.png)
 ![alt text](https://github.com/a-deda/share-location/blob/master/doc/4-contacts.png)
-![alt text](https://github.com/a-deda/share-location/blob/master/doc/5-add-contacts.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/5-add-contact.png)
 ![alt text](https://github.com/a-deda/share-location/blob/master/doc/6-register.png)
