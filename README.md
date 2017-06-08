@@ -45,4 +45,10 @@ Een functie die niet nodig is, maar het product iets completer maakt is ten eers
 
 Daarnaast is het wenselijk om voor het uitschakelen van de locatie-tracking om een wachtwoord te vragen. Kwaadwillenden, die de telefoon van een ander in handen zouden kunnen hebben, kunnen zo worden opgespoord.
 
-<i>De schetsen voor de applicatie staan in /doc.</i>
+<b>Schetsen</b>
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/1-main.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/2-main-request.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/3-side-panel.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/4-contacts.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/5-add-contacts.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/6-register.png)
