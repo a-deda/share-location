@@ -9,12 +9,15 @@ Een dergelijke applicatie kan ook handig zijn voor vriendengroepen. Op het momen
  
 <b>Functies & onderdelen</b>
 
-De applicatie zal worden gebouwd rondom een kaart waarop de locaties van de contacten van de gebruiker staan weergegeven, met daaronder een lijst met de exacte afstand tot elk contact en het tijdstip waarop de locatie voor het laatst bijgewerkt is. Het delen van de locatie wordt, wanneer dit ingeschakeld is, standaard elke minuut automatisch bijgewerkt. De applicatie zal de gebruiker dan ook de mogelijkheid bieden om het delen van de locatie in of uit te schakelen. Met een knop op een duidelijke locatie kan deze locatie tevens handmatig ververst worden. 
+De applicatie zal worden gebouwd rondom een kaart waarop de locaties van de contacten van de gebruiker staan weergegeven, met daaronder een lijst met de exacte afstand tot elk contact en het tijdstip waarop de locatie voor het laatst bijgewerkt is. De contacten worden georganiseerd in groepen, waaraan mensen toegevoegd kunnen worden. Het delen van de locatie wordt, wanneer dit ingeschakeld is, standaard elke minuut automatisch bijgewerkt. De applicatie zal de gebruiker dan ook de mogelijkheid bieden om het delen van de locatie in of uit te schakelen. Met een knop op een duidelijke locatie kan deze locatie tevens handmatig ververst worden. 
 
-Voordat een gebruiker de applicatie kan benutten, is het nodig dat er een account aangemaakt wordt. De applicatie zal daarom, wanneer deze voor de eerste keer wordt gestart, aan de gebruiker vragen om een account aan te maken. Wanneer iemand reeds een account aangemaakt heeft, kan op hetzelfde scherm gekozen worden om in te loggen.
+Voordat een gebruiker de applicatie kan benutten, is het nodig dat er een account aangemaakt wordt. De applicatie zal daarom, wanneer deze voor de eerste keer wordt gestart, aan de gebruiker vragen om een account aan te maken. Wanneer iemand reeds een account aangemaakt heeft, kan op hetzelfde scherm gekozen worden om in te loggen. Na het registreren kan de gebruiker ervoor kiezen om ofwel een nieuwe groep aan te maken, of niets te doen. Als voor de laatste optie gekozen wordt ziet de gebruiker na het aanmaken van zijn account alleen zichzelf op de kaart staan. 
 
-De applicatie zal een pagina bevatten waarop voorkeuren aangegeven kunnen worden. Hieronder vallen in ieder geval het in- of uitschakelen van het delen van de locatie, maar ook het interval waarmee de locatie standaard gedeeld wordt. Daarnaast kan een gebruiker hier uitloggen, waarna het inlogscherm getoond zal worden. 
-Contacten worden toegevoegd via de pagina ‘contacten beheren’. Wanneer de gebruiker iemand toevoegt, krijgt de ontvanger een vriendschapsverzoek op het moment dat hij de app opent. Deze kan dan geaccepteerd of geweigerd worden, zodat de locatie niet met iedereen gedeeld wordt.
+De applicatie zal een pagina bevatten waarop voorkeuren aangegeven kunnen worden. Hieronder vallen in ieder geval het in- of uitschakelen van het delen van de locatie, maar ook het interval waarmee de locatie standaard gedeeld wordt. Wanneer er gekozen wordt voor het uitschakelen van de eigen locatie, wordt het delen van de locatie in alle groepen waarin de gebruiker zit gestaakt. De gebruiker kan dan ook niet de locatie zien van anderen, wat middels een melding op de pagina met de kaart zal worden weergegeven. Daarnaast kan een gebruiker in de voorkeuren uitloggen, waarna het inlogscherm getoond zal worden. 
+
+De groepen kunnen worden bereikt via de <i>navigation drawer</i> aan de zijkant van het scherm. Hierin kan de gebruiker zichzelf uit groepen verwijderen en nieuwe groepen aanmaken. Daarnaast kan per groep, middels een aan/uit-schakelaar, de status van het locatie-delen van de gebruiker in de betreffende groep geregeld worden. Bij het maken van een nieuwe groep komt de gebruiker per toe te voegen contact in een nieuwe activity, waarin connectieverzoeken kunnen worden verzonden naar andere gebruikers. 
+
+Tenslotte zal de applicatie een functie bevatten waarmee men foto's met elkaar kan delen, als gebruikers dichtbij elkaar zijn. Deze functie zal worden ondergebracht op het scherm met de kaartweergave, in de vorm van een inbox. In deze nieuwe activity komen foto's binnen van verschillende contacten.
 	
 <b>Data</b>
 
@@ -45,4 +48,14 @@ Een functie die niet nodig is, maar het product iets completer maakt is ten eers
 
 Daarnaast is het wenselijk om voor het uitschakelen van de locatie-tracking om een wachtwoord te vragen. Kwaadwillenden, die de telefoon van een ander in handen zouden kunnen hebben, kunnen zo worden opgespoord.
 
-<i>De schetsen voor de applicatie staan in /doc.</i>
+<b>Optionele functies</b>
+- Notificatie als een nieuwe foto binnen komt.
+- Gebruikers in staat stellen een verzoek tot het maken van een foto te sturen.
+
+# Schetsen
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/1-main.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/2-main-request.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/3-side-panel.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/4-contacts.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/5-add-contact.png)
+![alt text](https://github.com/a-deda/share-location/blob/master/doc/6-register.png)
