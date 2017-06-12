@@ -1,12 +1,9 @@
-package nl.adeda.sharelocation;
+package nl.adeda.sharelocation.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,6 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import nl.adeda.sharelocation.MainActivity_Fragments.ContactFragment;
+import nl.adeda.sharelocation.MainActivity_Fragments.GroepenFragment;
+import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
+import nl.adeda.sharelocation.MainActivity_Fragments.KaartFragment;
+import nl.adeda.sharelocation.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+        // TODO: Get savedInstanceState of application
+        // TODO: Check if a fragment is still open
+
         // Set 'kaart' checked & select
         navigationView.getMenu().getItem(0).setChecked(true);
 
@@ -46,6 +52,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void selectMenuItem(MenuItem item) {
+        // TODO: Check if fragment is already running
+
         Fragment fragment = null;
 
         int id = item.getItemId();
@@ -56,6 +64,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_contacten:
                 fragment = new ContactFragment();
+                break;
+            case R.id.nav_groepen:
+                fragment = new GroepenFragment();
                 break;
             case R.id.nav_instellingen:
                 fragment = new InstellingenFragment();
@@ -95,9 +106,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_contact_toevoegen) {
+        if (id == R.id.action_groep_toevoegen) {
             // Start contacten toevoegen
-            Intent intent = new Intent(this, ContactToevoegenActivity.class);
+            Intent intent = new Intent(this, GroepToevoegenActivity.class);
             startActivity(intent);
 
             return true;

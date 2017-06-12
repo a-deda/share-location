@@ -1,4 +1,4 @@
-package nl.adeda.sharelocation;
+package nl.adeda.sharelocation.MainActivity_Fragments;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,8 +13,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import nl.adeda.sharelocation.Contact;
 import nl.adeda.sharelocation.Helpers.ContactListAdapter;
 import nl.adeda.sharelocation.Helpers.PhotoFixer;
+import nl.adeda.sharelocation.R;
 
 /**
  * Created by Antonio on 7-6-2017.
@@ -23,11 +25,7 @@ public class ContactFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_contacten, container, false);
-
-        setHasOptionsMenu(true);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_contacten, container, false);
     }
 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -67,13 +65,6 @@ public class ContactFragment extends Fragment {
         lvContactenLijst.setAdapter(adapter);
 
         return adapter;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-
     }
 }
 

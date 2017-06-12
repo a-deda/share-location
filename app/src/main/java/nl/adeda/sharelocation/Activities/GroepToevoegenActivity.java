@@ -1,19 +1,19 @@
-package nl.adeda.sharelocation;
+package nl.adeda.sharelocation.Activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import nl.adeda.sharelocation.R;
 
 /**
  * Created by Antonio on 8-6-2017.
  */
 
-public class ContactToevoegenActivity extends AppCompatActivity {
+public class GroepToevoegenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class ContactToevoegenActivity extends AppCompatActivity {
                 // TODO: Send request to user
 
                 // Go back
-                Toast.makeText(ContactToevoegenActivity.this, "Volgverzoek verzonden!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GroepToevoegenActivity.this, "Volgverzoek verzonden!", Toast.LENGTH_SHORT).show();
                 finish();
                 onBackPressed();
             }

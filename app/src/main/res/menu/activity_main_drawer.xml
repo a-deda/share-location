@@ -8,8 +8,12 @@
             android:title="Kaart" />
         <item
             android:id="@+id/nav_contacten"
-            android:icon="@drawable/ic_group_black_24dp"
+            android:icon="@drawable/ic_contacts_black_24dp"
             android:title="Contacten" />
+        <item
+            android:id="@+id/nav_groepen"
+            android:icon="@drawable/ic_group_black_24dp"
+            android:title="Groepen" />
         <item
             android:id="@+id/nav_instellingen"
             android:icon="@drawable/ic_settings_black_24dp"
