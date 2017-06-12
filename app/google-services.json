@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "65919486221",
+    "firebase_url": "https://loqa-ab16f.firebaseio.com",
+    "project_id": "loqa-ab16f",
+    "storage_bucket": "loqa-ab16f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65919486221:android:8eb8c0fa1595fdea",
+        "android_client_info": {
+          "package_name": "nl.adeda.sharelocation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "65919486221-ljrhr593cukvpocug4b6561hjtl7u58b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nl.adeda.sharelocation",
+            "certificate_hash": "9c120f6bccc93ef3427d3d868f5d80f707de1451"
+          }
+        },
+        {
+          "client_id": "65919486221-45adlglf5c6np06q1jh11ei9cqdcf6p6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDTPt2L5KpNhgugc3Z2ofjJWgnSGyZ76M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "65919486221-45adlglf5c6np06q1jh11ei9cqdcf6p6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

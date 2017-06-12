@@ -11,4 +11,9 @@
 
     <string name="google_maps_key">AIzaSyDhleTlwgHiGm_HzgwSI73LRMms0d-NAJk</string>
     <string name="cont_toev">Contact toevoegen</string>
+    <string name="e_mail">E-mail</string>
+    <string name="wachtwoord_bevestigen">Wachtwoord bevestigen</string>
+    <string name="wachtwoord">Wachtwoord</string>
+    <string name="al_een_account">Al een account? Ga naar login.</string>
+    <string name="registreren">Registreren</string>
 </resources>
