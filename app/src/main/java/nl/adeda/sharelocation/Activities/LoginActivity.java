@@ -16,7 +16,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import nl.adeda.sharelocation.Helpers.UpdateInterface;
 import nl.adeda.sharelocation.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -64,6 +66,18 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        // TODO: Update UI for current user
+        if (user != null) {
+            UpdateInterface updateUI = new UpdateInterface();
+            updateUI.update(user, this);
+        }
     }
 
     private void formCheck() {

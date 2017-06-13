@@ -18,4 +18,5 @@
     <string name="registreren">Registreren</string>
     <string name="inloggen">Inloggen</string>
     <string name="nog_geen_account">Nog geen account? Registreer je nu!</string>
+    <string name="uitloggen">Uitloggen</string>
 </resources>
