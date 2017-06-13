@@ -16,4 +16,6 @@
     <string name="wachtwoord">Wachtwoord</string>
     <string name="al_een_account">Al een account? Ga naar login.</string>
     <string name="registreren">Registreren</string>
+    <string name="inloggen">Inloggen</string>
+    <string name="nog_geen_account">Nog geen account? Registreer je nu!</string>
 </resources>

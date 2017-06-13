@@ -13,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import nl.adeda.sharelocation.MainActivity_Fragments.ContactFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.GroepenFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
@@ -49,6 +52,17 @@ public class MainActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        loadUser();
+    }
+
+    private void loadUser() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userID = user.getUid();
+
+            // Use userID to load user information,
+            // map data, contacts, groups & photo's
+        }
     }
 
     private void selectMenuItem(MenuItem item) {

@@ -1,12 +1,11 @@
 package nl.adeda.sharelocation.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -19,14 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.w3c.dom.Text;
-
 import nl.adeda.sharelocation.R;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
 
     private EditText email;
     private EditText password;
@@ -34,16 +30,17 @@ public class RegisterActivity extends AppCompatActivity {
     private Button signUpBtn;
     private Button signInLink;
 
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
         // Hide action bar
         getSupportActionBar().hide();
 
         firebaseAuth = FirebaseAuth.getInstance();
-
 
         // Get views
         email = (EditText) findViewById(R.id.emailField);
@@ -60,10 +57,13 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        // Go to sign in activity
         signInLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -91,6 +91,12 @@ public class RegisterActivity extends AppCompatActivity {
             errors += 1;
         }
 
+        if (passwordText.length() < 6) {
+            password.setBackgroundColor(Color.parseColor("#661414"));
+            passwordConf.setBackgroundColor(Color.parseColor("#661414"));
+            Toast.makeText(this, "Wachtwoord moet minimaal 6 tekens lang zijn.", Toast.LENGTH_SHORT).show();
+        }
+
         if (passwordConfText.equals("")) {
             passwordConf.setBackgroundColor(Color.parseColor("#661414"));
             errors += 1;
@@ -109,6 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (errors == 0){
+            progressDialog = ProgressDialog.show(this, "", "Registreren...", true);
             register(emailText, passwordText);
         }
     }
@@ -119,7 +126,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(RegisterActivity.this, "Account aangemaakt!", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+
+                    // Go to MainActivity
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
                 } else {
                     Toast.makeText(RegisterActivity.this, "Er is iets misgegaan. Controleer je gegevens en probeer het opnieuw.", Toast.LENGTH_SHORT).show();
                     Log.w("Registration", task.getException());

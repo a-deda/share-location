@@ -11,22 +11,22 @@
     android:background="@color/colorPrimaryDark"
     android:layout_centerVertical="true"
     tools:context="nl.adeda.sharelocation.Activities.RegisterActivity">
-
+    
     <ImageView
-        android:id="@+id/loqa_logo_login"
+        android:id="@+id/loqa_logo"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="150dp" 
         android:src="@mipmap/loqa_logo"/>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/emailTILLogin"
+        android:id="@+id/emailTIL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/loqa_logo_login"
+        android:layout_below="@id/loqa_logo"
         android:textColorHint="@color/hintColor">
 
         <EditText
-            android:id="@+id/emailFieldLogin"
+            android:id="@+id/emailField"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:hint="@string/e_mail"
@@ -37,15 +37,15 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/passwordTILLogin"
+        android:id="@+id/passwordTIL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/emailTILLogin"
+        android:layout_below="@id/emailTIL"
         android:layout_marginTop="20dp"
         android:textColorHint="@color/hintColor">
 
         <EditText
-            android:id="@+id/passwordFieldLogin"
+            android:id="@+id/passwordField"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:hint="@string/wachtwoord"
@@ -55,21 +55,40 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <Button
-        android:id="@+id/signInBtn"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/passConfTIL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/inloggen"
-        android:layout_below="@id/passwordTILLogin"
+        android:layout_below="@id/passwordTIL"
+        android:layout_marginTop="20dp"
+        android:textColorHint="@color/hintColor">
+
+        <EditText
+            android:id="@+id/passwordConfirmField"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:hint="@string/wachtwoord_bevestigen"
+            android:background="#212121"
+            android:textColor="@color/colorPrimary"
+            android:inputType="textPassword"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/signUpBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/registreren"
+        android:layout_below="@id/passConfTIL"
         android:layout_marginTop="20dp"/>
 
     <Button
-        android:id="@+id/signUpLink"
+        android:id="@+id/signInLink"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/nog_geen_account"
+        android:text="@string/al_een_account"
         android:textColor="@color/colorAccent"
-        android:layout_below="@id/signInBtn"
+        android:layout_below="@id/signUpBtn"
         style="?android:attr/borderlessButtonStyle"/>
 
 </RelativeLayout>
