@@ -2,12 +2,14 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.R;
 
 public class KaartFragment extends Fragment implements OnMapReadyCallback {
@@ -33,6 +38,9 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
     private static final LatLng TKY = new LatLng(35.6732619, 139.5703014);
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -42,6 +50,9 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
         // Create map
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.kaart);
         mapFragment.getMapAsync(this);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
 
         // TODO: Check if user has any open requests
 
@@ -67,6 +78,7 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         // When map is loaded, put markers in
 
+        // TEST MARKERS
         Marker mAMS = googleMap.addMarker(new MarkerOptions().position(AMS).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_1)));
         Marker mRTD = googleMap.addMarker(new MarkerOptions().position(RTD).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_2)));
         Marker mALK = googleMap.addMarker(new MarkerOptions().position(ALK).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_3)));
@@ -85,7 +97,10 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
 
         googleMap.setMyLocationEnabled(true);
 
-        LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        GPSHelper gpsHelper = new GPSHelper(getContext(), firebaseUser);
+        gpsHelper.getLocation();
+
+        // TODO: Change 2nd parameter to time specified by user.
 
     }
 }

@@ -18,11 +18,56 @@
         android:layout_height="150dp" 
         android:src="@mipmap/loqa_logo"/>
 
+    <LinearLayout
+        android:id="@+id/namen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loqa_logo"
+        android:weightSum="1">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginEnd="5dp"
+            android:textColorHint="@color/hintColor">
+
+            <EditText
+                android:id="@+id/firstName"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="#212121"
+                android:textColor="@color/colorPrimary"
+                android:hint="@string/voornaam"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginStart="5dp"
+            android:textColorHint="@color/hintColor">
+
+            <EditText
+                android:id="@+id/lastName"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="#212121"
+                android:textColor="@color/colorPrimary"
+                android:hint="@string/achternaam"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+
+    </LinearLayout>
+    
     <android.support.design.widget.TextInputLayout
         android:id="@+id/emailTIL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/loqa_logo"
+        android:layout_below="@id/namen"
+        android:layout_marginTop="10dp"
         android:textColorHint="@color/hintColor">
 
         <EditText
@@ -41,7 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/emailTIL"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:textColorHint="@color/hintColor">
 
         <EditText
@@ -60,7 +105,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/passwordTIL"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:textColorHint="@color/hintColor">
 
         <EditText
@@ -80,7 +125,7 @@
         android:layout_height="wrap_content"
         android:text="@string/registreren"
         android:layout_below="@id/passConfTIL"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="10dp"/>
 
     <Button
         android:id="@+id/signInLink"

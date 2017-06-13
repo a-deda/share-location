@@ -18,17 +18,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
+
 import nl.adeda.sharelocation.R;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
 
+    private EditText voornaam;
+    private EditText achternaam;
     private EditText email;
     private EditText password;
     private EditText passwordConf;
-    private Button signUpBtn;
-    private Button signInLink;
+
 
     ProgressDialog progressDialog;
 
@@ -43,11 +46,13 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         // Get views
+        voornaam = (EditText) findViewById(R.id.firstName);
+        achternaam = (EditText) findViewById(R.id.lastName);
         email = (EditText) findViewById(R.id.emailField);
         password = (EditText) findViewById(R.id.passwordField);
         passwordConf = (EditText) findViewById(R.id.passwordConfirmField);
-        signUpBtn = (Button) findViewById(R.id.signUpBtn);
-        signInLink = (Button) findViewById(R.id.signInLink);
+        Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
+        Button signInLink = (Button) findViewById(R.id.signInLink);
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,10 +75,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void formCheck() {
         // Get text from views
+        String voornaamText = voornaam.getText().toString().trim();
+        String achternaamText = achternaam.getText().toString().trim();
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         String passwordConfText = passwordConf.getText().toString().trim();
 
+        voornaam.setBackgroundColor(Color.parseColor("#212121"));
+        achternaam.setBackgroundColor(Color.parseColor("#212121"));
         email.setBackgroundColor(Color.parseColor("#212121"));
         password.setBackgroundColor(Color.parseColor("#212121"));
         passwordConf.setBackgroundColor(Color.parseColor("#212121"));
@@ -81,6 +90,16 @@ public class RegisterActivity extends AppCompatActivity {
         int errors = 0;
 
         // Check if fields are not empty
+        if (voornaamText.equals("")) {
+            voornaam.setBackgroundColor(Color.parseColor("#661414"));
+            errors += 1;
+        }
+
+        if (achternaamText.equals("")) {
+            achternaam.setBackgroundColor(Color.parseColor("#661414"));
+            errors += 1;
+        }
+
         if (emailText.equals("")) {
             email.setBackgroundColor(Color.parseColor("#661414"));
             errors += 1;
@@ -116,17 +135,20 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (errors == 0){
             progressDialog = ProgressDialog.show(this, "", "Registreren...", true);
-            register(emailText, passwordText);
+            String[] data = new String[]{emailText, passwordText, voornaamText, achternaamText};
+            register(data);
         }
     }
 
-    private void register(String email, String password) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+    private void register(String[] data) {
+        firebaseAuth.createUserWithEmailAndPassword(data[0], data[1])
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
+
+                    // TODO: Save first & last name in Firebase (data[2] & data[3])
 
                     // Go to MainActivity
                     Intent intent = new Intent(RegisterActivity.this, MainActivity.class);

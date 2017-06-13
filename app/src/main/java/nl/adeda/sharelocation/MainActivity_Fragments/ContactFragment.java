@@ -13,7 +13,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import nl.adeda.sharelocation.Contact;
+import nl.adeda.sharelocation.User;
 import nl.adeda.sharelocation.Helpers.ContactListAdapter;
 import nl.adeda.sharelocation.Helpers.PhotoFixer;
 import nl.adeda.sharelocation.R;
@@ -44,11 +44,11 @@ public class ContactFragment extends Fragment {
         Bitmap cp5 = pf.fixPhoto(getResources(), R.mipmap.profile_5);
 
         // Put test data into list
-        Contact contact1 = new Contact("Hans", "van der Plas", cp1);
-        Contact contact2 = new Contact("Johan", "Hanenveld", cp2);
-        Contact contact3 = new Contact("Geert", "Waldorf", cp3);
-        Contact contact4 = new Contact("Peter", "Bakker", cp4);
-        Contact contact5 = new Contact("Kim", "Chin Chang-Sing-Pang", cp5);
+        User contact1 = new User("Hans", "van der Plas", cp1);
+        User contact2 = new User("Johan", "Hanenveld", cp2);
+        User contact3 = new User("Geert", "Waldorf", cp3);
+        User contact4 = new User("Peter", "Bakker", cp4);
+        User contact5 = new User("Kim", "Chin Chang-Sing-Pang", cp5);
 
         adapter.add(contact1);
         adapter.add(contact2);
@@ -58,7 +58,7 @@ public class ContactFragment extends Fragment {
     }
 
     private ContactListAdapter setContactListAdapter(View view) {
-        ArrayList<Contact> contactenLijst = new ArrayList<>();
+        ArrayList<User> contactenLijst = new ArrayList<>();
         ContactListAdapter adapter = new ContactListAdapter(getContext(), contactenLijst);
 
         ListView lvContactenLijst = (ListView) view.findViewById(R.id.contacten_lijst);

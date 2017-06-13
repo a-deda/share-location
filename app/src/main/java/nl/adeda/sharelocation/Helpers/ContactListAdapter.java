@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import nl.adeda.sharelocation.Contact;
+import nl.adeda.sharelocation.User;
 import nl.adeda.sharelocation.R;
 
 /**
@@ -20,14 +20,14 @@ import nl.adeda.sharelocation.R;
  */
 
 public class ContactListAdapter extends ArrayAdapter {
-    public ContactListAdapter(Context context, ArrayList<Contact> contacten) {
+    public ContactListAdapter(Context context, ArrayList<User> contacten) {
         super(context, 0, contacten);
     }
 
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Contact contact = (Contact) getItem(position);
+        User contact = (User) getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_contact_list, parent, false);

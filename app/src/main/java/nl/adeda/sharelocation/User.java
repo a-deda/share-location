@@ -10,7 +10,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by Antonio on 8-6-2017.
  */
-public class Contact {
+public class User {
 
     public String voornaam;
     public String achternaam;
@@ -20,14 +20,14 @@ public class Contact {
     public String tijdRefresh;
 
     // Constructor for contact list
-    public Contact(String voornaam, String achternaam, Bitmap foto) {
+    public User(String voornaam, String achternaam, Bitmap foto) {
         this.voornaam = voornaam;
         this.achternaam = achternaam;
         this.foto = foto;
     }
 
     // Constructor for list with map
-    public Contact(String voornaam, String achternaam, Bitmap foto, String latitude, String longitude, String tijdRefresh) {
+    public User(String voornaam, String achternaam, Bitmap foto, String latitude, String longitude, String tijdRefresh) {
         this.voornaam = voornaam;
         this.achternaam = achternaam;
         this.foto = foto;
