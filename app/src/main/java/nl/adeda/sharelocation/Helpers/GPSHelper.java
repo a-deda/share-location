@@ -82,10 +82,10 @@ public class GPSHelper extends Service implements LocationListener {
             Log.e("Long: ", "" + lon);
 
 
-            User user = new User("Jan", "de Vries", null, ""+lat, ""+lon, "1");
+            User user = new User(lat, lon);
 
             FirebaseHelper firebaseHelper = new FirebaseHelper();
-            firebaseHelper.pushToFirebase(firebaseUser, user);
+            firebaseHelper.pushToFirebase(firebaseUser, user, 0);
             user = null;
         }
     }

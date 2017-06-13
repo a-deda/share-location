@@ -12,3 +12,7 @@ Pagina contact toevoegen omgevormd tot groepen toevoegen, nieuw fragment ‘groe
  
 # dag 5 - 12 juni
 Login en registreer activity aangemaakt en gekoppeld aan Firebase.
+
+# dag 6 - 13 juni
+Voor- en achternaam toegevoegd aan registratie. Gebruiker blijft ingelogd totdat deze zelf uitlogt. Coördinaten van gebruiker worden opgehaald en opgeslagen in Firebase onder referentie van de UserID, maar door een bug worden de gegevens onder een andere UserID eveneens overschreven.
+

@@ -17,10 +17,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
+import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
+import nl.adeda.sharelocation.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -31,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText email;
     private EditText password;
     private EditText passwordConf;
-
 
     ProgressDialog progressDialog;
 
@@ -140,7 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void register(String[] data) {
+    private void register(final String[] data) {
         firebaseAuth.createUserWithEmailAndPassword(data[0], data[1])
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -148,7 +150,12 @@ public class RegisterActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     progressDialog.dismiss();
 
-                    // TODO: Save first & last name in Firebase (data[2] & data[3])
+                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+                    // Save first & last name in Firebase
+                    User user = new User(data[2], data[3]);
+                    FirebaseHelper firebaseHelper = new FirebaseHelper();
+                        firebaseHelper.pushToFirebase(firebaseUser, user, 1);
 
                     // Go to MainActivity
                     Intent intent = new Intent(RegisterActivity.this, MainActivity.class);

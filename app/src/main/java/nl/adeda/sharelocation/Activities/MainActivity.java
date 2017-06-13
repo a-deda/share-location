@@ -21,6 +21,7 @@ import nl.adeda.sharelocation.MainActivity_Fragments.GroepenFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.KaartFragment;
 import nl.adeda.sharelocation.R;
+import nl.adeda.sharelocation.User;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,7 +42,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        // TODO: Get savedInstanceState of application
+        // TODO: Get savedInstanceState for application
+        // TODO: Get intent from login
+
+        Intent intent = new Intent();
+
         // TODO: Check if a fragment is still open
 
         // Set 'kaart' checked & select
