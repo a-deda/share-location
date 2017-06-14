@@ -152,17 +152,22 @@ public class RegisterActivity extends AppCompatActivity {
 
                     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-                    // Save first & last name in Firebase
-                    User user = new User(data[2], data[3]);
-                    FirebaseHelper firebaseHelper = new FirebaseHelper();
-                        firebaseHelper.pushToFirebase(firebaseUser, user, 1);
+                    if (firebaseUser == null) {
+                        Toast.makeText(RegisterActivity.this, "Registratie kon niet worden geverifieërd. Probeer het nog eens.",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                    // Go to MainActivity
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    // Save first & last name in Firebase
+                    String[] userData = new String[]{data[2], data[3]};
+                    FirebaseHelper firebaseHelper = new FirebaseHelper();
+                        firebaseHelper.pushToFirebaseOnRegistration(firebaseUser, userData);
+
+                    // Load UI & go to MainActivity
+                    firebaseHelper.pullFromFirebase(firebaseUser, 1, RegisterActivity.this, MainActivity.class);
 
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(RegisterActivity.this, "Er is iets misgegaan. Controleer je gegevens en probeer het opnieuw.", Toast.LENGTH_SHORT).show();
                     Log.w("Registration", task.getException());
                 }

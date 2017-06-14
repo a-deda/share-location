@@ -1,6 +1,10 @@
 package nl.adeda.sharelocation.Helpers;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -12,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
+import nl.adeda.sharelocation.Activities.MainActivity;
 import nl.adeda.sharelocation.User;
 
 /**
@@ -26,48 +31,60 @@ public class FirebaseHelper {
 
     public FirebaseHelper() {
         database = FirebaseDatabase.getInstance();
-        rootRef = database.getReference("data");
+        rootRef = database.getReference("userData");
     }
 
-    public void pushToFirebase(@NonNull FirebaseUser loggedInUser, User user, int dataType) {
+    public void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
         userRef = rootRef.child(loggedInUser.getUid());
 
-        switch (dataType) {
-            case 0:
-                userRef.child("location").setValue(user);
-                break;
-            case 1:
-                userRef.child("userInfo").setValue(user);
-                break;
-        }
+        userRef.child("userInfo").child("firstName").setValue(data[0]);
+        userRef.child("userInfo").child("lastName").setValue(data[1]);
     }
 
-    public User pullFromFirebase(@NonNull FirebaseUser user, final int dataType) {
+    public void pushToFirebaseOnLocationUpdate(@NonNull FirebaseUser loggedInUser, Double[] data) {
+        userRef = rootRef.child(loggedInUser.getUid());
+
+        userRef.child("location").child("latitude").setValue(data[0]);
+        userRef.child("location").child("longitude").setValue(data[1]);
+    }
+
+    public void pullFromFirebase(@NonNull final FirebaseUser user, final int dataType, final Activity callingActivity, final Class destination) {
         userRef = rootRef.child(user.getUid());
 
-        final User[] userData = new User[1];
+        final User userData = new User();
 
-        rootRef.addValueEventListener(new ValueEventListener() {
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-
+                Log.e("onDataChange", "onDataChange was called.");
                 switch (dataType) {
-                    case 0:
-                        userData[0] = dataSnapshot.child("location").getValue(User.class);
+                    case 0: // Get location data
+                        userData.setLatitude((double) dataSnapshot.child("location").child("latitude").getValue());
+                        userData.setLongitude((double) dataSnapshot.child("location").child("longitude").getValue());
                         break;
-                    case 1:
-                        userData[0] = dataSnapshot.child("userInfo").getValue(User.class);
+                    case 1: // Get user information
+                        userData.setVoornaam((String) dataSnapshot.child("userInfo").child("firstName").getValue());
+                        userData.setAchternaam((String) dataSnapshot.child("userInfo").child("lastName").getValue());
+                        break;
+                    case 2: // Get all data
+                        break;
                 }
+                returnData(userData, callingActivity, destination);
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.e("VEL", "ValueEventListener was cancelled.");
             }
         });
+    }
 
-        return userData[0];
+    private void returnData(User userData, Activity callingActivity, Class destination) {
+        Intent intent = new Intent(callingActivity, destination);
+        intent.putExtra("userData", userData);
+        callingActivity.startActivity(intent);
+        callingActivity.finish();
     }
 
 

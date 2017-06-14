@@ -17,13 +17,6 @@ import nl.adeda.sharelocation.User;
 public class UpdateInterface {
 
     public void update(FirebaseUser userData, Activity callingActivity) {
-        // Fetch user data from Firebase
-        FirebaseHelper firebaseHelper = new FirebaseHelper();
-        User fireBaseData = firebaseHelper.pullFromFirebase(userData, 1);
 
-        // TODO: Put data from Firebase into intent
-        Intent intent = new Intent(callingActivity, MainActivity.class);
-        callingActivity.startActivity(intent);
-        callingActivity.finish();
     }
 }

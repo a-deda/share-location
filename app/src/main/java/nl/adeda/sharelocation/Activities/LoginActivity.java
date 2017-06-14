@@ -1,6 +1,7 @@
 package nl.adeda.sharelocation.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.UpdateInterface;
 import nl.adeda.sharelocation.R;
 
@@ -36,12 +39,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         // Hide action bar
         getSupportActionBar().hide();
 
         firebaseAuth = FirebaseAuth.getInstance();
+        setContentView(R.layout.activity_login);
 
         // Get views
         email = (EditText) findViewById(R.id.emailFieldLogin);
@@ -52,6 +55,10 @@ public class LoginActivity extends AppCompatActivity {
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Hide keyboard
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
                 // Check correctness of filled-in form
                 formCheck();
             }
@@ -73,11 +80,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
-        // TODO: Update UI for current user
         if (user != null) {
-            UpdateInterface updateUI = new UpdateInterface();
-            updateUI.update(user, this);
+            setContentView(R.layout.splash_screen);
+            // Fetch user data from Firebase
+            FirebaseHelper firebaseHelper = new FirebaseHelper();
+            firebaseHelper.pullFromFirebase(user, 1, this, MainActivity.class);
         }
+
     }
 
     private void formCheck() {
@@ -116,9 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         if (task.isSuccessful()) {
                             // Go to MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            onStart();
                         } else {
                             Toast.makeText(LoginActivity.this, "Er is iets misgegaan. Probeer het nog eens.", Toast.LENGTH_SHORT).show();
                         }

@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,11 +43,23 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View navigationHeader = navigationView.getHeaderView(0);
 
         // TODO: Get savedInstanceState for application
-        // TODO: Get intent from login
 
-        Intent intent = new Intent();
+        // Get intent from FirebaseHelper.returnData after login
+        User user = (User) getIntent().getSerializableExtra("userData");
+
+        // Set navigation drawer for current user (data from Firebase)
+        TextView nameField = (TextView) navigationHeader.findViewById(R.id.nav_header_name);
+        TextView emailField = (TextView) navigationHeader.findViewById(R.id.nav_header_email);
+
+        String firstName = user.getVoornaam();
+        String lastName = user.getAchternaam();
+        String email = loadUser()[0];
+
+        nameField.setText(String.format("%s %s", firstName, lastName));
+        emailField.setText(email);
 
         // TODO: Check if a fragment is still open
 
@@ -60,14 +74,17 @@ public class MainActivity extends AppCompatActivity
         loadUser();
     }
 
-    private void loadUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String userID = user.getUid();
+    private String[] loadUser() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            // Use userID to load user information,
-            // map data, contacts, groups & photo's
+        String[] userData = new String[2];
+
+        if (firebaseUser != null) {
+            userData[0] = firebaseUser.getEmail();
+            // TODO: Photo
         }
+
+        return userData;
     }
 
     private void selectMenuItem(MenuItem item) {

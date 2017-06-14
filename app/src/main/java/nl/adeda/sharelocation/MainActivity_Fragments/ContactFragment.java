@@ -35,6 +35,8 @@ public class ContactFragment extends Fragment {
         ContactListAdapter adapter = setContactListAdapter(view);
 
         // TODO: Get data from Firebase
+
+        /*
         // Convert images
         PhotoFixer pf = new PhotoFixer();
         Bitmap cp1 = pf.fixPhoto(getResources(), R.mipmap.profile_1);
@@ -55,6 +57,7 @@ public class ContactFragment extends Fragment {
         adapter.add(contact3);
         adapter.add(contact4);
         adapter.add(contact5);
+        */
     }
 
     private ContactListAdapter setContactListAdapter(View view) {

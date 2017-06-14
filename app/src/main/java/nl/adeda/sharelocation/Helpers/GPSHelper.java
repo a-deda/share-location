@@ -40,7 +40,7 @@ public class GPSHelper extends Service implements LocationListener {
         this.firebaseUser = firebaseUser;
     }
 
-    public void getLocation() {
+    public Location getLocation() {
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -70,24 +70,12 @@ public class GPSHelper extends Service implements LocationListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return location;
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null) {
-            double lat = location.getLatitude();
-            double lon = location.getLongitude();
-
-            Log.e("Lat: ", "" + lat);
-            Log.e("Long: ", "" + lon);
-
-
-            User user = new User(lat, lon);
-
-            FirebaseHelper firebaseHelper = new FirebaseHelper();
-            firebaseHelper.pushToFirebase(firebaseUser, user, 0);
-            user = null;
-        }
+        locationPusher(location);
     }
 
     @Override
@@ -109,5 +97,20 @@ public class GPSHelper extends Service implements LocationListener {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public void locationPusher(Location currentLocation) {
+        if (currentLocation != null) {
+            double lat = currentLocation.getLatitude();
+            double lon = currentLocation.getLongitude();
+
+            Log.e("Lat: ", "" + lat);
+            Log.e("Long: ", "" + lon);
+
+            Double[] data = new Double[]{lat, lon};
+
+            FirebaseHelper firebaseHelper = new FirebaseHelper();
+            firebaseHelper.pushToFirebaseOnLocationUpdate(firebaseUser, data);
+        }
     }
 }
