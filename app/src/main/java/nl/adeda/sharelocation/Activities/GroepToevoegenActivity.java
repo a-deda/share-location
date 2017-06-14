@@ -5,8 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
 
 /**
@@ -34,20 +36,27 @@ public class GroepToevoegenActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        Button toevBtn = (Button) findViewById(R.id.contact_toev_btn);
+        final EditText emailField = (EditText) findViewById(R.id.contact_to_add);
+        final Button toevBtn = (Button) findViewById(R.id.contact_add_btn);
 
         // OnClickListener for add button
         toevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO: Check if user is valid (!= "")
-                // TODO: Send request to user
+                String email = emailField.getText().toString();
 
+                // Check if user that has been typed in exists
+                FirebaseHelper firebaseHelper = new FirebaseHelper();
+                firebaseHelper.checkIfUserExists(email);
+
+                // TODO: Send request to user
+                /*
                 // Go back
                 Toast.makeText(GroepToevoegenActivity.this, "Volgverzoek verzonden!", Toast.LENGTH_SHORT).show();
                 finish();
                 onBackPressed();
+                */
             }
         });
     }

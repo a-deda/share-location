@@ -159,7 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
 
                     // Save first & last name in Firebase
-                    String[] userData = new String[]{data[2], data[3]};
+                    String[] userData = new String[]{data[0], data[2], data[3]};
                     FirebaseHelper firebaseHelper = new FirebaseHelper();
                         firebaseHelper.pushToFirebaseOnRegistration(firebaseUser, userData);
 

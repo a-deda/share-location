@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
+import nl.adeda.sharelocation.Activities.GroepToevoegenActivity;
 import nl.adeda.sharelocation.Activities.MainActivity;
 import nl.adeda.sharelocation.User;
 
@@ -37,8 +39,9 @@ public class FirebaseHelper {
     public void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
         userRef = rootRef.child(loggedInUser.getUid());
 
-        userRef.child("userInfo").child("firstName").setValue(data[0]);
-        userRef.child("userInfo").child("lastName").setValue(data[1]);
+        userRef.child("email").setValue(data[0]);
+        userRef.child("userInfo").child("firstName").setValue(data[1]);
+        userRef.child("userInfo").child("lastName").setValue(data[2]);
     }
 
     public void pushToFirebaseOnLocationUpdate(@NonNull FirebaseUser loggedInUser, Double[] data) {
@@ -66,7 +69,7 @@ public class FirebaseHelper {
                         userData.setVoornaam((String) dataSnapshot.child("userInfo").child("firstName").getValue());
                         userData.setAchternaam((String) dataSnapshot.child("userInfo").child("lastName").getValue());
                         break;
-                    case 2: // Get all data
+                    case 2: // TODO: Get all data
                         break;
                 }
                 returnData(userData, callingActivity, destination);
@@ -87,5 +90,26 @@ public class FirebaseHelper {
         callingActivity.finish();
     }
 
+    public void checkIfUserExists(final String email) {
+        DatabaseReference userDataRef = rootRef.child("userData");
+
+        userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String emailAddress = (String) snapshot.child("email").getValue();
+                    Log.e("EMAIL", emailAddress);
+                    if (email.equals(emailAddress)) {
+                        Log.e("Ex", "It exists.");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 }
