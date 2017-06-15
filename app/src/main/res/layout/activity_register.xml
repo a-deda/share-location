@@ -15,14 +15,16 @@
     <ImageView
         android:id="@+id/loqa_logo"
         android:layout_width="match_parent"
-        android:layout_height="150dp" 
-        android:src="@mipmap/loqa_logo"/>
+        android:layout_height="100dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:src="@drawable/loqa_logo_white" />
 
     <LinearLayout
         android:id="@+id/namen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/loqa_logo"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:weightSum="1">
 
         <android.support.design.widget.TextInputLayout

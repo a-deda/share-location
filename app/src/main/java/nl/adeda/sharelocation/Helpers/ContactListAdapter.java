@@ -27,19 +27,21 @@ public class ContactListAdapter extends ArrayAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        User contact = (User) getItem(position);
+        User user = (User) getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_contact_list, parent, false);
         }
 
-        CircleImageView profielFoto = (CircleImageView) convertView.findViewById(R.id.contacten_lijst_foto);
-        TextView naam = (TextView) convertView.findViewById(R.id.contacten_lijst_naam);
+        CircleImageView profielFoto = (CircleImageView) convertView.findViewById(R.id.contact_list_photo);
+        TextView naam = (TextView) convertView.findViewById(R.id.contact_list_name);
+        TextView email = (TextView) convertView.findViewById(R.id.contact_list_email);
 
-        profielFoto.setImageBitmap(contact.foto);
-        String completeNaam = contact.voornaam + " " + contact.achternaam;
+        profielFoto.setImageBitmap(user.foto);
+        String completeNaam = user.voornaam + " " + user.achternaam;
 
         naam.setText(completeNaam);
+        email.setText(user.email);
 
         return convertView;
 

@@ -16,3 +16,7 @@ Login en registreer activity aangemaakt en gekoppeld aan Firebase.
 # dag 6 - 13 juni
 Voor- en achternaam toegevoegd aan registratie. Gebruiker blijft ingelogd totdat deze zelf uitlogt. Coördinaten van gebruiker worden opgehaald en opgeslagen in Firebase onder referentie van de UserID, maar door een bug worden de gegevens onder een andere UserID eveneens overschreven.
 
+# dag 7 - 14 juni
+App laadt nu informatie voor ingelogde gebruiker en begonnen met de implementatie van groepen.
+
+# dag 8 - 15 juni

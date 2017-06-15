@@ -17,6 +17,7 @@ public class User implements Serializable {
 
     public String voornaam;
     public String achternaam;
+    public String email;
     public Bitmap foto;
     public double latitude;
     public double longitude;
@@ -101,5 +102,9 @@ public class User implements Serializable {
 
     public void setTijdRefresh(String tijdRefresh) {
         this.tijdRefresh = tijdRefresh;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
