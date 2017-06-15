@@ -8,7 +8,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import nl.adeda.sharelocation.Helpers.ContactListAdapter;
+import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
 
 /**
@@ -16,11 +25,15 @@ import nl.adeda.sharelocation.R;
  */
 public class GroepenFragment extends Fragment {
 
+    ListView groupList;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_groepen, container, false);
 
         setHasOptionsMenu(true);
+
+        groupList = (ListView) view.findViewById(R.id.group_list);
 
         return view;
     }
@@ -34,5 +47,17 @@ public class GroepenFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Groepen");
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseHelper.pullFromFirebase(user, 2, null, null);
+        }
+
+        ArrayList<String> groupNames = FirebaseHelper.returnGroupNames();
+        // TODO (16/6): Build new adapter for groupnames
+
+        // TODO (16/6): onItemClick - open KaartFragment with map for group
+
+
     }
 }

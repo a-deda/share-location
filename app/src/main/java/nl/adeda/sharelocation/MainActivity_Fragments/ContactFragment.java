@@ -34,8 +34,6 @@ public class ContactFragment extends Fragment {
 
         ContactListAdapter adapter = setContactListAdapter(view);
 
-        // TODO: Get data from Firebase
-
         /*
         // Convert images
         PhotoFixer pf = new PhotoFixer();
