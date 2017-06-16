@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView
+    <ExpandableListView
         android:id="@+id/group_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

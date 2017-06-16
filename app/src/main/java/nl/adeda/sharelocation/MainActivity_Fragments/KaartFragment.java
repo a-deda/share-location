@@ -96,8 +96,10 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
                     MY_PERMISSIONS_REQUEST_LOCATION);
         }
 
-        googleMap.setMyLocationEnabled(true);
-
+        if (ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            googleMap.setMyLocationEnabled(true);
+        }
         // Get and push location coordinates to Firebase
         GPSHelper gpsHelper = new GPSHelper(getContext(), firebaseUser);
         Location location = gpsHelper.getLocation();

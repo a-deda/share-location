@@ -19,11 +19,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.ArrayList;
-
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
-import nl.adeda.sharelocation.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -160,11 +157,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                     // Save first & last name in Firebase
                     String[] userData = new String[]{data[0], data[2], data[3]};
-                    FirebaseHelper firebaseHelper = new FirebaseHelper();
-                        firebaseHelper.pushToFirebaseOnRegistration(firebaseUser, userData);
+                    FirebaseHelper.pushToFirebaseOnRegistration(firebaseUser, userData);
 
                     // Load UI & go to MainActivity
-                    firebaseHelper.pullFromFirebase(firebaseUser, 1, RegisterActivity.this, MainActivity.class);
+                    FirebaseHelper.pullFromFirebase(firebaseUser, 1, RegisterActivity.this, MainActivity.class);
 
                 } else {
                     progressDialog.dismiss();

@@ -94,7 +94,7 @@ public class GroepToevoegenActivity extends AppCompatActivity {
             String groupName = groupNameField.getText().toString();
             ArrayList<String> usersToAdd = FirebaseHelper.returnAddedKeys();
 
-            FirebaseHelper.pushToFirebaseOnAddingGroup(groupName, usersToAdd);
+            FirebaseHelper.pushToFirebaseOnAddingGroup(groupName, dateTime, usersToAdd);
 
             Toast.makeText(GroepToevoegenActivity.this, "Groep aangemaakt!", Toast.LENGTH_SHORT).show();
             finish();

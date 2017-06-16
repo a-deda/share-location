@@ -17,6 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
 
 /**
@@ -29,17 +30,20 @@ public class FirebaseHelper {
     private static DatabaseReference userDataRef;
     private static DatabaseReference userRef;
 
+    private static User userData;
     private static ArrayList<String> userIds = new ArrayList<>();
     private static ArrayList<String> groupNames = new ArrayList<>();
 
+    public static boolean isFinished;
 
-    public FirebaseHelper() {
+
+    static {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         groupDataRef = database.getReference("groupData");
         userDataRef = database.getReference("userData");
     }
 
-    public void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
+    public static void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
         userRef = userDataRef.child(loggedInUser.getUid());
 
         userRef.child("email").setValue(data[0]);
@@ -55,12 +59,13 @@ public class FirebaseHelper {
     }
 
     // Pushes group data to group node
-    public static void pushToFirebaseOnAddingGroup(String groupName, final ArrayList<String> usersToAdd) {
+    public static void pushToFirebaseOnAddingGroup(String groupName, DateTime dateTime, final ArrayList<String> usersToAdd) {
         DatabaseReference pushedGroupRef = groupDataRef.push();
         final String pushedGroupKey = pushedGroupRef.getKey();
 
         pushedGroupRef.child("groupName").setValue(groupName);
         pushedGroupRef.child("members").setValue(usersToAdd);
+        pushedGroupRef.child("endTime").setValue(dateTime);
 
         // Loop through Firebase users to find group members. If found,
         // put the unique group key in the user node.
@@ -88,7 +93,7 @@ public class FirebaseHelper {
     public static void pullFromFirebase(@NonNull final FirebaseUser user, final int dataType, final Activity callingActivity, final Class destination) {
         userRef = userDataRef.child(user.getUid());
 
-        final User userData = new User();
+        userData = new User();
 
         final ArrayList<String> groupKeys = new ArrayList<>(); // Array for keys of all the users' groups
 
@@ -106,18 +111,16 @@ public class FirebaseHelper {
                         userData.setVoornaam((String) dataSnapshot.child("userInfo").child("firstName").getValue());
                         userData.setAchternaam((String) dataSnapshot.child("userInfo").child("lastName").getValue());
                         returnDataForActivityChange(userData, callingActivity, destination);
+                        Log.e("FBH", "userData is set");
                         break;
-                    case 2: // Get group information
+                    case 2: // Get group information for current user
                         for (DataSnapshot childNode : dataSnapshot.child("groups").getChildren()) {
-                            groupKeys.add(childNode.getValue().toString());
+                            groupKeys.add(childNode.getValue().toString()); // Add key of group to ArrayList
                         }
                         getGroupInformation(groupKeys);
                     case 3: // TODO: Get all data
                         break;
                 }
-                // TODO (16/6): Make returnDataForActivityChange() into return function
-
-
             }
 
             @Override
@@ -126,7 +129,8 @@ public class FirebaseHelper {
             }
         });
 }
-    // Gets group names and group member uIDs for given groups
+    // Called by pullFromFirebase(), gets group names and group member uIDs
+    // for all the groups the user is in.
     private static void getGroupInformation(final ArrayList<String> groupKeys) {
 
         groupDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -135,7 +139,10 @@ public class FirebaseHelper {
                 for (DataSnapshot childNode : dataSnapshot.getChildren()) {
                     for (String groupKey : groupKeys) {
                         if (groupKey.equals(childNode.getKey())) {
-                            groupNames.add((String) childNode.child("groupName").getValue());
+                            groupNames.add((String) childNode.child("groupName").getValue()); // Add group name to list
+                            ArrayList<String> groupMemberUIDs = getGroupMemberUIDs(childNode); // Get all UIDs of current group
+                            getGroupMemberNames(groupMemberUIDs); // Gets first and last names of users in UID list
+                            // TODO: Put ExtendedListAdapter on groupNames
                         }
                     }
                 }
@@ -146,6 +153,40 @@ public class FirebaseHelper {
 
             }
         });
+    }
+
+    private static void getGroupMemberNames(final ArrayList<String> groupMemberUIDs) {
+        final ArrayList<String> groupMemberNames = new ArrayList<>();
+
+        userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot childNode : dataSnapshot.getChildren()) {
+                    for (String groupMemberUID : groupMemberUIDs) {
+                        if (groupMemberUID.equals(childNode.getKey())) {
+                            String firstName = (String) childNode.child("userInfo").child("firstName").getValue();
+                            String lastName = (String) childNode.child("userInfo").child("lastName").getValue();
+                            groupMemberNames.add(firstName + " " + lastName);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    // Returns an ArrayList<String> of group member UIDs in specified group node
+    private static ArrayList<String> getGroupMemberUIDs(DataSnapshot childNode) {
+        ArrayList<String> groupMemberUIDs = new ArrayList<>();
+        for (DataSnapshot groupMember : childNode.child("members").getChildren()) {
+            groupMemberUIDs.add((String) groupMember.getValue());
+        }
+        return groupMemberUIDs;
     }
 
     private static void returnDataForActivityChange(User userData, Activity callingActivity, Class destination) {
@@ -217,5 +258,12 @@ public class FirebaseHelper {
         ArrayList<String> groupNamesToReturn = new ArrayList<>(groupNames);
         groupNames.clear();
         return groupNamesToReturn;
+    }
+
+    // Returns userData that has been queried by pullFromFirebase()
+    // CAN ONLY BE CALLED AFTER pullFromFirebase() has finished!
+    public static User returnUserData() {
+        Log.e("RET", "returnUserData() is called");
+        return userData;
     }
 }

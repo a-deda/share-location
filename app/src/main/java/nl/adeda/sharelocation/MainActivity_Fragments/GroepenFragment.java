@@ -14,9 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import nl.adeda.sharelocation.Helpers.ContactListAdapter;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
 
@@ -53,10 +51,13 @@ public class GroepenFragment extends Fragment {
             FirebaseHelper.pullFromFirebase(user, 2, null, null);
         }
 
-        ArrayList<String> groupNames = FirebaseHelper.returnGroupNames();
         // TODO (16/6): Build new adapter for groupnames
 
         // TODO (16/6): onItemClick - open KaartFragment with map for group
+
+
+
+
 
 
     }
