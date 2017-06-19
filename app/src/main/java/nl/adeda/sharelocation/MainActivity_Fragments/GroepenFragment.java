@@ -48,7 +48,7 @@ public class GroepenFragment extends Fragment {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            FirebaseHelper.pullFromFirebase(user, 2, null, null);
+            FirebaseHelper.pullFromFirebase(user, 2);
         }
 
         // TODO (16/6): Build new adapter for groupnames

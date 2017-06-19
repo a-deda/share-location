@@ -20,12 +20,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import nl.adeda.sharelocation.Helpers.CallbackInterface;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.UpdateInterface;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements CallbackInterface {
 
     private FirebaseAuth firebaseAuth;
 
@@ -84,7 +85,8 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
             setContentView(R.layout.splash_screen);
             // Fetch user data from Firebase
-            FirebaseHelper.pullFromFirebase(user, 1, this, MainActivity.class);
+            FirebaseHelper.delegate = this;
+            FirebaseHelper.pullFromFirebase(user, 1);
         }
 
     }
@@ -131,5 +133,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onCompleteCallback(User userData) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("userData", userData);
+        startActivity(intent);
+        finish();
     }
 }

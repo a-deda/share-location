@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.telecom.Call;
 import android.util.Log;
 import android.widget.ListView;
 
@@ -14,8 +15,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+import javax.security.auth.callback.Callback;
 
 import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
@@ -34,7 +39,7 @@ public class FirebaseHelper {
     private static ArrayList<String> userIds = new ArrayList<>();
     private static ArrayList<String> groupNames = new ArrayList<>();
 
-    public static boolean isFinished;
+    public static CallbackInterface delegate;
 
 
     static {
@@ -90,14 +95,14 @@ public class FirebaseHelper {
     }
 
     // Pulls personal data for user from Firebase
-    public static void pullFromFirebase(@NonNull final FirebaseUser user, final int dataType, final Activity callingActivity, final Class destination) {
+    public static void pullFromFirebase(@NonNull final FirebaseUser user, final int dataType) {
         userRef = userDataRef.child(user.getUid());
 
         userData = new User();
 
         final ArrayList<String> groupKeys = new ArrayList<>(); // Array for keys of all the users' groups
 
-        userRef.addValueEventListener(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e("onDataChange", "onDataChange was called.");
@@ -105,12 +110,12 @@ public class FirebaseHelper {
                     case 0: // Get location data
                         userData.setLatitude((double) dataSnapshot.child("location").child("latitude").getValue());
                         userData.setLongitude((double) dataSnapshot.child("location").child("longitude").getValue());
-                        returnDataForActivityChange(userData, callingActivity, destination);
+                        //returnDataForActivityChange(userData, callingActivity, destination);
                         break;
                     case 1: // Get user information
                         userData.setVoornaam((String) dataSnapshot.child("userInfo").child("firstName").getValue());
                         userData.setAchternaam((String) dataSnapshot.child("userInfo").child("lastName").getValue());
-                        returnDataForActivityChange(userData, callingActivity, destination);
+                        delegate.onCompleteCallback(userData);
                         Log.e("FBH", "userData is set");
                         break;
                     case 2: // Get group information for current user

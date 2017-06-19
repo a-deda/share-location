@@ -160,7 +160,7 @@ public class RegisterActivity extends AppCompatActivity {
                     FirebaseHelper.pushToFirebaseOnRegistration(firebaseUser, userData);
 
                     // Load UI & go to MainActivity
-                    FirebaseHelper.pullFromFirebase(firebaseUser, 1, RegisterActivity.this, MainActivity.class);
+                    FirebaseHelper.pullFromFirebase(firebaseUser, 1);
 
                 } else {
                     progressDialog.dismiss();
