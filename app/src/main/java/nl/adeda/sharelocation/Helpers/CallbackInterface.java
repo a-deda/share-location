@@ -1,5 +1,9 @@
 package nl.adeda.sharelocation.Helpers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import nl.adeda.sharelocation.User;
 
 /**
@@ -7,5 +11,6 @@ import nl.adeda.sharelocation.User;
  */
 
 public interface CallbackInterface {
-    void onCompleteCallback(User userData);
+    void onLoginUserDataCallback(User userData);
+    void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames);
 }

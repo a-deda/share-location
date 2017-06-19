@@ -8,22 +8,30 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import nl.adeda.sharelocation.Helpers.CallbackInterface;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
+import nl.adeda.sharelocation.Helpers.GroupListAdapter;
 import nl.adeda.sharelocation.R;
+import nl.adeda.sharelocation.User;
 
 /**
  * Created by Antonio on 9-6-2017.
  */
-public class GroepenFragment extends Fragment {
+public class GroupsFragment extends Fragment implements CallbackInterface {
 
-    ListView groupList;
+    ExpandableListView groupList;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -31,7 +39,7 @@ public class GroepenFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        groupList = (ListView) view.findViewById(R.id.group_list);
+        groupList = (ExpandableListView) view.findViewById(R.id.group_list);
 
         return view;
     }
@@ -48,10 +56,9 @@ public class GroepenFragment extends Fragment {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            FirebaseHelper.pullFromFirebase(user, 2);
+            FirebaseHelper.delegate = this;
+            FirebaseHelper.pullFromFirebase(user, 2); // Get users' first and last names
         }
-
-        // TODO (16/6): Build new adapter for groupnames
 
         // TODO (16/6): onItemClick - open KaartFragment with map for group
 
@@ -60,5 +67,16 @@ public class GroepenFragment extends Fragment {
 
 
 
+    }
+
+    @Override
+    public void onLoginUserDataCallback(User userData) {
+        // Has no function here.
+    }
+
+    @Override
+    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames) {
+        GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), groupNames, groupMemberNames);
+        groupList.setAdapter(groupListAdapter);
     }
 }

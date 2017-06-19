@@ -20,3 +20,10 @@ Voor- en achternaam toegevoegd aan registratie. Gebruiker blijft ingelogd totdat
 App laadt nu informatie voor ingelogde gebruiker en begonnen met de implementatie van groepen.
 
 # dag 8 - 15 juni
+Data wat betreft groepen kan worden opgehaald en geüpdate worden in Firebase. Elke gebruiker heeft een node 'groups' waaronder de keys van de groepen staan waarin de gebruiker zich bevindt. Onder de node 'groupData' staan alle groepen met daarin de keys van de gebruikers die de groep bevat. Idee van de app lichtelijk aangepast: app is gebaseerd op tijdelijke groepen: bij het aanmaken van de groep kan een gebruiker aangeven tot wanneer de groep moet blijven bestaan. Vervolgens verwijdert deze groep zich vanzelf.
+
+# dag 9 - 16 juni
+Gekeken naar hoe de data in de onDataChange van Firebase verkregen kan worden in de class die de Firebase-functie aanroept, aangezien al deze functies in een aparte class staan. Lichte aanpassingen gemaakt aan de LoginActivity en het ophalen van de namen van groepsleden uit de database voltooid.
+
+# dag 10 - 19 juni
+Gestart met het implementeren van interfaces om het probleem van vrijdag (dag 9) op te lossen.

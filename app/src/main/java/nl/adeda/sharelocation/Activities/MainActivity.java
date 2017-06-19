@@ -19,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import nl.adeda.sharelocation.MainActivity_Fragments.ContactFragment;
-import nl.adeda.sharelocation.MainActivity_Fragments.GroepenFragment;
+import nl.adeda.sharelocation.MainActivity_Fragments.GroupsFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.KaartFragment;
 import nl.adeda.sharelocation.R;
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new ContactFragment();
                 break;
             case R.id.nav_groepen:
-                fragment = new GroepenFragment();
+                fragment = new GroupsFragment();
                 break;
             case R.id.nav_instellingen:
                 fragment = new InstellingenFragment();

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.telecom.Call;
 import android.util.Log;
 import android.widget.ListView;
 
@@ -15,12 +14,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-
-import javax.security.auth.callback.Callback;
+import java.util.HashMap;
+import java.util.List;
 
 import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
@@ -29,7 +25,7 @@ import nl.adeda.sharelocation.User;
  * Created by Antonio on 13-6-2017.
  */
 
-public class FirebaseHelper {
+public class FirebaseHelper implements CallbackInterface {
 
     private static DatabaseReference groupDataRef;
     private static DatabaseReference userDataRef;
@@ -41,11 +37,16 @@ public class FirebaseHelper {
 
     public static CallbackInterface delegate;
 
+    private static final HashMap<String, List<String>> groupsNamesHashMap = new HashMap<String, List<String>>();
+    static int i;
+
+
 
     static {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         groupDataRef = database.getReference("groupData");
         userDataRef = database.getReference("userData");
+        i = 0;
     }
 
     public static void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
@@ -115,7 +116,7 @@ public class FirebaseHelper {
                     case 1: // Get user information
                         userData.setVoornaam((String) dataSnapshot.child("userInfo").child("firstName").getValue());
                         userData.setAchternaam((String) dataSnapshot.child("userInfo").child("lastName").getValue());
-                        delegate.onCompleteCallback(userData);
+                        delegate.onLoginUserDataCallback(userData);
                         Log.e("FBH", "userData is set");
                         break;
                     case 2: // Get group information for current user
@@ -144,13 +145,16 @@ public class FirebaseHelper {
                 for (DataSnapshot childNode : dataSnapshot.getChildren()) {
                     for (String groupKey : groupKeys) {
                         if (groupKey.equals(childNode.getKey())) {
-                            groupNames.add((String) childNode.child("groupName").getValue()); // Add group name to list
+                            String currentGroupName = (String) childNode.child("groupName").getValue();
+                            groupNames.add(currentGroupName); // Add group name to list
                             ArrayList<String> groupMemberUIDs = getGroupMemberUIDs(childNode); // Get all UIDs of current group
-                            getGroupMemberNames(groupMemberUIDs); // Gets first and last names of users in UID list
-                            // TODO: Put ExtendedListAdapter on groupNames
+                            getGroupMemberNames(groupMemberUIDs, i); // Gets first and last names of users in UID list
+                            i++;
                         }
                     }
                 }
+
+                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap); // Callback method in GroupFragment
             }
 
             @Override
@@ -160,7 +164,7 @@ public class FirebaseHelper {
         });
     }
 
-    private static void getGroupMemberNames(final ArrayList<String> groupMemberUIDs) {
+    private static void getGroupMemberNames(final ArrayList<String> groupMemberUIDs, final int index) {
         final ArrayList<String> groupMemberNames = new ArrayList<>();
 
         userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -175,6 +179,7 @@ public class FirebaseHelper {
                         }
                     }
                 }
+                groupsNamesHashMap.put(groupNames.get(index), groupMemberNames);
             }
 
             @Override
@@ -270,5 +275,15 @@ public class FirebaseHelper {
     public static User returnUserData() {
         Log.e("RET", "returnUserData() is called");
         return userData;
+    }
+
+    @Override
+    public void onLoginUserDataCallback(User userData) {
+        // Not used here.
+    }
+
+    @Override
+    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames) {
+        // Not used here.
     }
 }

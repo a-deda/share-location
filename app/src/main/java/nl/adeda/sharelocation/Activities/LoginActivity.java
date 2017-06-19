@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -20,9 +19,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import nl.adeda.sharelocation.Helpers.CallbackInterface;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
-import nl.adeda.sharelocation.Helpers.UpdateInterface;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
@@ -136,10 +138,15 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
     }
 
     @Override
-    public void onCompleteCallback(User userData) {
+    public void onLoginUserDataCallback(User userData) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("userData", userData);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames) {
+        // Has no function here.
     }
 }
