@@ -12,5 +12,5 @@ import nl.adeda.sharelocation.User;
 
 public interface CallbackInterface {
     void onLoginUserDataCallback(User userData);
-    void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames);
+    void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames, HashMap<String, List<String>> groupMemberUIDs);
 }

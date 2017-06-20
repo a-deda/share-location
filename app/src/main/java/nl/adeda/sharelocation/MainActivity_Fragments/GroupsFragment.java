@@ -8,10 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +29,7 @@ import nl.adeda.sharelocation.User;
 public class GroupsFragment extends Fragment implements CallbackInterface {
 
     ExpandableListView groupList;
+    HashMap<String, List<String>> groupMemberUIDs;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -62,11 +60,6 @@ public class GroupsFragment extends Fragment implements CallbackInterface {
 
         // TODO (16/6): onItemClick - open KaartFragment with map for group
 
-
-
-
-
-
     }
 
     @Override
@@ -74,9 +67,13 @@ public class GroupsFragment extends Fragment implements CallbackInterface {
         // Has no function here.
     }
 
+    // Sets an adapter on the ExpandableListView containing the names of the groups the
+    // user is in, and other users that are in these groups.
     @Override
-    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames) {
+    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames, HashMap<String, List<String>> groupMemberUIDs) {
         GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), groupNames, groupMemberNames);
         groupList.setAdapter(groupListAdapter);
+
+        this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
     }
 }

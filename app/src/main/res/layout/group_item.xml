@@ -1,41 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<!--<com.chauthai.swipereveallayout.SwipeRevealLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:mode="same_level"
+    app:dragEdge="right"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
-        android:id="@+id/groups_photo_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="@android:color/holo_red_dark"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/groups_group_photo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"/>
+        <Button
+            android:id="@+id/delete_group_swipe_btn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:drawableStart="@drawable/ic_delete_black_24dp"
+            style="?android:attr/borderlessButtonStyle"/>
+
     </LinearLayout>
-
-    <LinearLayout
+-->
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="5dp"
-        android:layout_gravity="center">
+        android:layout_height="match_parent"
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/groups_group_name"
-            android:layout_width="match_parent"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/groups_group_photo"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerVertical="true"/>
+
+
+        <LinearLayout
+            android:id="@+id/groups_text_field_layout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:textSize="12pt"/>
+            android:orientation="vertical"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/groups_group_photo"
+            android:layout_centerVertical="true">
 
-        <TextView
-            android:id="@+id/groups_group_time_left"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8pt"
-            android:textStyle="italic"/>
+            <TextView
+                android:id="@+id/groups_group_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:textSize="8pt"
+                android:textStyle="bold"/>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/groups_group_time_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="8pt"
+                android:textStyle="italic"/>
 
-</LinearLayout>
+        </LinearLayout>
+
+            <Button
+                android:id="@+id/go_to_map_btn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:focusable="false"/>
+
+
+    </RelativeLayout>
+<!--</com.chauthai.swipereveallayout.SwipeRevealLayout>-->

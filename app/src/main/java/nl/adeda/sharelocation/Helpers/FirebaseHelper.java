@@ -25,28 +25,34 @@ import nl.adeda.sharelocation.User;
  * Created by Antonio on 13-6-2017.
  */
 
-public class FirebaseHelper implements CallbackInterface {
+public class FirebaseHelper {
 
     private static DatabaseReference groupDataRef;
     private static DatabaseReference userDataRef;
     private static DatabaseReference userRef;
+    private static ArrayList<String> groupNames;
+    private static ArrayList<String> groupMemberUIDs;
+
 
     private static User userData;
-    private static ArrayList<String> userIds = new ArrayList<>();
-    private static ArrayList<String> groupNames = new ArrayList<>();
+    private static ArrayList<String> userIds;
 
     public static CallbackInterface delegate;
 
-    private static final HashMap<String, List<String>> groupsNamesHashMap = new HashMap<String, List<String>>();
-    static int i;
+    private static final HashMap<String, List<String>> groupsNamesHashMap;
+    private static final HashMap<String, List<String>> groupsUIDHashMap;
+    private static int i;
 
 
 
     static {
+        // Initialize variables
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         groupDataRef = database.getReference("groupData");
         userDataRef = database.getReference("userData");
-        i = 0;
+        groupsNamesHashMap = new HashMap<>();
+        groupsUIDHashMap = new HashMap<>();
+        userIds = new ArrayList<>();
     }
 
     public static void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
@@ -121,7 +127,7 @@ public class FirebaseHelper implements CallbackInterface {
                         break;
                     case 2: // Get group information for current user
                         for (DataSnapshot childNode : dataSnapshot.child("groups").getChildren()) {
-                            groupKeys.add(childNode.getValue().toString()); // Add key of group to ArrayList
+                            groupKeys.add(childNode.getValue().toString()); // Add key of group the user is in to ArrayList
                         }
                         getGroupInformation(groupKeys);
                     case 3: // TODO: Get all data
@@ -138,6 +144,9 @@ public class FirebaseHelper implements CallbackInterface {
     // Called by pullFromFirebase(), gets group names and group member uIDs
     // for all the groups the user is in.
     private static void getGroupInformation(final ArrayList<String> groupKeys) {
+        groupNames = new ArrayList<>();
+
+        i = 0;
 
         groupDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -147,14 +156,14 @@ public class FirebaseHelper implements CallbackInterface {
                         if (groupKey.equals(childNode.getKey())) {
                             String currentGroupName = (String) childNode.child("groupName").getValue();
                             groupNames.add(currentGroupName); // Add group name to list
-                            ArrayList<String> groupMemberUIDs = getGroupMemberUIDs(childNode); // Get all UIDs of current group
+                            groupMemberUIDs = getGroupMemberUIDs(childNode); // Get all UIDs of current group
                             getGroupMemberNames(groupMemberUIDs, i); // Gets first and last names of users in UID list
                             i++;
                         }
                     }
                 }
 
-                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap); // Callback method in GroupFragment
+                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap); // Callback method in GroupFragment
             }
 
             @Override
@@ -179,7 +188,8 @@ public class FirebaseHelper implements CallbackInterface {
                         }
                     }
                 }
-                groupsNamesHashMap.put(groupNames.get(index), groupMemberNames);
+                groupsNamesHashMap.put(groupNames.get(index), groupMemberNames); // Put group members in current group (at index)
+                groupsUIDHashMap.put(groupNames.get(index), groupMemberUIDs); // Put group member UIDs in current group (at index)
             }
 
             @Override
@@ -277,13 +287,4 @@ public class FirebaseHelper implements CallbackInterface {
         return userData;
     }
 
-    @Override
-    public void onLoginUserDataCallback(User userData) {
-        // Not used here.
-    }
-
-    @Override
-    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames) {
-        // Not used here.
-    }
 }

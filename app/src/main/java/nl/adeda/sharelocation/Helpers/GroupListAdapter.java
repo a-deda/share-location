@@ -2,11 +2,13 @@ package nl.adeda.sharelocation.Helpers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -74,7 +76,7 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String groupNameText = (String) getGroup(groupPosition);
 
         if (convertView == null) {
@@ -86,6 +88,14 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
         TextView groupTimeTextView = (TextView) convertView.findViewById(R.id.groups_group_time_left);
 
         groupNameTextView.setText(groupNameText);
+
+        Button goToMapViewBtn = (Button) convertView.findViewById(R.id.go_to_map_btn);
+        goToMapViewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         return convertView;
     }

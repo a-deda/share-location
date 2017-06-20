@@ -146,7 +146,8 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
     }
 
     @Override
-    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames) {
+    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames, HashMap<String, List<String>> groupMemberUIDs) {
         // Has no function here.
     }
+
 }
