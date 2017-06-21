@@ -3,13 +3,10 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +15,22 @@ import android.widget.ListView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import nl.adeda.sharelocation.Helpers.CallbackGroupUpdate;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.R;
+import nl.adeda.sharelocation.User;
 
-public class KaartFragment extends Fragment implements OnMapReadyCallback {
+public class KaartFragment extends Fragment implements OnMapReadyCallback, CallbackGroupUpdate {
 
     // TEST LOCATIONS
     private static final LatLng AMS = new LatLng(52.355207, 4.95411);
@@ -41,6 +42,11 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+
+    private ArrayList<User> userList;
+    private List<String> userIDs;
+
+    private GoogleMap googleMap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +60,9 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+
+        userList = (ArrayList<User>) getArguments().getSerializable("userList"); // Get information of users in group
+        userIDs = (List<String>) getArguments().getSerializable("userIDs");
 
         // TODO: Check if user has any open requests
 
@@ -77,6 +86,7 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
         // When map is loaded, put markers in
         /*
         // TEST MARKERS
@@ -86,6 +96,13 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
         Marker mPAR = googleMap.addMarker(new MarkerOptions().position(PAR).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_4)));
         Marker mTKY = googleMap.addMarker(new MarkerOptions().position(TKY).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_5)));
         */
+
+        for (User user : userList) {
+            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f));
+            marker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
+        }
+
         // Check if location request permission is granted
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -100,13 +117,25 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);
         }
+
         // Get and push location coordinates to Firebase
         GPSHelper gpsHelper = new GPSHelper(getContext(), firebaseUser);
         Location location = gpsHelper.getLocation();
         gpsHelper.locationPusher(location);
 
-
         // TODO: Change 2nd parameter to time specified by user.
 
+        FirebaseHelper.groupDelegate = this;
+        FirebaseHelper.updateLocations(userIDs);
+    }
+
+    @Override
+    public void returnGroupUpdate(ArrayList<User> userData) {
+        googleMap.clear();
+        for (User user : userData) {
+            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f));
+            marker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
+        }
     }
 }

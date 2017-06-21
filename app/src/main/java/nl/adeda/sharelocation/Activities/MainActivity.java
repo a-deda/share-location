@@ -95,12 +95,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_kaart:
-                fragment = new KaartFragment();
-                break;
-            case R.id.nav_contacten:
-                fragment = new ContactFragment();
-                break;
             case R.id.nav_groepen:
                 fragment = new GroupsFragment();
                 break;

@@ -3,14 +3,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_kaart"
-            android:icon="@drawable/ic_place_black_24dp"
-            android:title="Kaart" />
-        <item
-            android:id="@+id/nav_contacten"
-            android:icon="@drawable/ic_contacts_black_24dp"
-            android:title="Contacten" />
-        <item
             android:id="@+id/nav_groepen"
             android:icon="@drawable/ic_group_black_24dp"
             android:title="Groepen" />

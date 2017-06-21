@@ -39,6 +39,7 @@ public class FirebaseHelper {
     private static ArrayList<String> userIds;
 
     public static CallbackInterface delegate;
+    public static CallbackGroupUpdate groupDelegate;
 
     private static final LinkedHashMap<String, List<String>> groupsNamesHashMap;
     private static final LinkedHashMap<String, List<String>> groupsUIDHashMap;
@@ -213,7 +214,7 @@ public class FirebaseHelper {
     public static void pullGroupMemberLocations(final List<String> memberUIDs) {
         final ArrayList<User> membersInGroup = new ArrayList<>();
 
-        userDataRef.addValueEventListener(new ValueEventListener() {
+        userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
@@ -224,12 +225,12 @@ public class FirebaseHelper {
                             userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
                             userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
                             userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
-                            // userData.setVoornaam((String) childSnapshot.child("userInfo").child("photoURI").getValue());
+                            // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
                             membersInGroup.add(userData);
                         }
                     }
                 }
-                delegate.onLoadGroupMap(membersInGroup);
+                delegate.onLoadGroupMap(membersInGroup, memberUIDs);
             }
 
             @Override
@@ -317,4 +318,33 @@ public class FirebaseHelper {
         return userData;
     }
 
+    public static void updateLocations(final List<String> userIds) {
+        final ArrayList<User> membersInGroupUpdate = new ArrayList<>();
+
+        userDataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    for (String userId : userIds) {
+                        if (userId.equals(childSnapshot.getKey())) {
+                            userData = new User();
+                            userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
+                            userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
+                            userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
+                            userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
+                            // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
+                            membersInGroupUpdate.add(userData);
+                        }
+                    }
+                }
+                groupDelegate.returnGroupUpdate(membersInGroupUpdate);
+                membersInGroupUpdate.clear();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

@@ -3,7 +3,7 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +14,7 @@ import android.widget.ExpandableListView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -82,8 +83,17 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users) {
+    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs) {
+        KaartFragment mapFragment = new KaartFragment();
 
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("userList", users);
+        arguments.putSerializable("userIDs", (Serializable) memberUIDs);
+        mapFragment.setArguments(arguments);
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.add(R.id.content_layout, mapFragment);
+        ft.commit();
     }
 
     @Override

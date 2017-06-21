@@ -20,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -152,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users) {
+    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs) {
         // Has no function here.
     }
 
