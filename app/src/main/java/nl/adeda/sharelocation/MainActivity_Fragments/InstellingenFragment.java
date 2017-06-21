@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import nl.adeda.sharelocation.Activities.LoginActivity;
 import nl.adeda.sharelocation.Activities.MainActivity;
+import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
 
 /**
@@ -36,6 +37,7 @@ public class InstellingenFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
+                FirebaseHelper.userRef = null;
                 Intent intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
                 getActivity().finish();

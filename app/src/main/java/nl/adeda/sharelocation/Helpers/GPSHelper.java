@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import nl.adeda.sharelocation.Activities.MainActivity;
@@ -30,14 +31,12 @@ public class GPSHelper extends Service implements LocationListener {
     private FirebaseUser firebaseUser;
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
-    boolean canGetLocation = false;
 
     Location location;
     LocationManager locationManager;
 
-    public GPSHelper(Context context, FirebaseUser firebaseUser) {
+    public GPSHelper(Context context) {
         this.context = context;
-        this.firebaseUser = firebaseUser;
     }
 
     public Location getLocation() {
@@ -109,8 +108,11 @@ public class GPSHelper extends Service implements LocationListener {
 
             Double[] data = new Double[]{lat, lon};
 
-            FirebaseHelper firebaseHelper = new FirebaseHelper();
-            firebaseHelper.pushToFirebaseOnLocationUpdate(firebaseUser, data);
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                FirebaseHelper.pushToFirebaseOnLocationUpdate(userId, data);
+            }
+
         }
     }
 }

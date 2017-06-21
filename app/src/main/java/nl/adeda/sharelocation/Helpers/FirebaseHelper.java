@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,7 +31,7 @@ public class FirebaseHelper {
 
     private static DatabaseReference groupDataRef;
     private static DatabaseReference userDataRef;
-    private static DatabaseReference userRef;
+    public static DatabaseReference userRef;
     private static ArrayList<String> groupNames;
     private static ArrayList<String> groupMemberUIDs;
 
@@ -65,8 +66,8 @@ public class FirebaseHelper {
         userRef.child("userInfo").child("lastName").setValue(data[2]);
     }
 
-    public void pushToFirebaseOnLocationUpdate(@NonNull FirebaseUser loggedInUser, Double[] data) {
-        userRef = userDataRef.child(loggedInUser.getUid());
+    public static void pushToFirebaseOnLocationUpdate(@NonNull String loggedInUserId, Double[] data) {
+        userRef = userDataRef.child(loggedInUserId);
 
         userRef.child("location").child("latitude").setValue(data[0]);
         userRef.child("location").child("longitude").setValue(data[1]);

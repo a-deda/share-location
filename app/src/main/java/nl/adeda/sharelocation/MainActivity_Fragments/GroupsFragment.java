@@ -1,5 +1,6 @@
 package nl.adeda.sharelocation.MainActivity_Fragments;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import java.util.List;
 import nl.adeda.sharelocation.Helpers.CallbackInterface;
 import nl.adeda.sharelocation.Helpers.CallbackInterfaceGroupList;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
+import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.Helpers.GroupListAdapter;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
@@ -80,6 +82,11 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         groupList.setAdapter(groupListAdapter);
 
         this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
+
+        // Get and push location coordinates to Firebase
+        GPSHelper gpsHelper = new GPSHelper(getContext());
+        Location location = gpsHelper.getLocation();
+        gpsHelper.locationPusher(location);
     }
 
     @Override

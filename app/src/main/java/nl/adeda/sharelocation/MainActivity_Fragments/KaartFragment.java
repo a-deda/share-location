@@ -97,12 +97,6 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback, Callb
         Marker mTKY = googleMap.addMarker(new MarkerOptions().position(TKY).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_5)));
         */
 
-        for (User user : userList) {
-            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
-            Marker marker = googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f));
-            marker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
-        }
-
         // Check if location request permission is granted
         if (ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -119,9 +113,16 @@ public class KaartFragment extends Fragment implements OnMapReadyCallback, Callb
         }
 
         // Get and push location coordinates to Firebase
-        GPSHelper gpsHelper = new GPSHelper(getContext(), firebaseUser);
+        GPSHelper gpsHelper = new GPSHelper(getContext());
         Location location = gpsHelper.getLocation();
         gpsHelper.locationPusher(location);
+
+        for (User user : userList) {
+            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f));
+            marker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
+        }
+
 
         // TODO: Change 2nd parameter to time specified by user.
 
