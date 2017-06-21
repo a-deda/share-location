@@ -3,10 +3,14 @@ package nl.adeda.sharelocation.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -14,7 +18,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -35,6 +43,8 @@ public class FirebaseHelper {
     private static ArrayList<String> groupNames;
     private static ArrayList<String> groupMemberUIDs;
 
+    private static StorageReference storageRef;
+    private static StorageReference userStorageRef;
 
     private static User userData;
     private static ArrayList<String> userIds;
@@ -51,8 +61,10 @@ public class FirebaseHelper {
     static {
         // Initialize variables
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
         groupDataRef = database.getReference("groupData");
         userDataRef = database.getReference("userData");
+        storageRef = storage.getReference("userData");
         groupsNamesHashMap = new LinkedHashMap<>();
         groupsUIDHashMap = new LinkedHashMap<>();
         userIds = new ArrayList<>();
@@ -102,6 +114,25 @@ public class FirebaseHelper {
             }
         });
 
+    }
+
+    public static void pushProfilePhoto(@NonNull String loggedInUserId, File profilePhoto) {
+        userStorageRef = storageRef.child(loggedInUserId);
+
+        Uri fileURI = Uri.fromFile(profilePhoto);
+        UploadTask uploadTask = userStorageRef.putFile(fileURI);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // onSuccess
+            }
+        });
     }
 
     // Pulls personal data for user from Firebase
