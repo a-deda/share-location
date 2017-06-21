@@ -2,6 +2,7 @@ package nl.adeda.sharelocation.Helpers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.LauncherApps;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import nl.adeda.sharelocation.User;
 
 public class GroupListAdapter extends BaseExpandableListAdapter {
 
+    public static CallbackInterfaceGroupList delegate;
     private Context context;
     private List<String> groupNames;
     private HashMap<String, List<String>> groupMembers;
@@ -93,7 +95,7 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
         goToMapViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                delegate.onGroupListClick(groupPosition);
             }
         });
 

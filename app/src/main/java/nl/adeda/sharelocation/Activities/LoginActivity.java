@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import nl.adeda.sharelocation.Helpers.CallbackInterface;
@@ -146,7 +147,12 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
     }
 
     @Override
-    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames, HashMap<String, List<String>> groupMemberUIDs) {
+    public void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames, LinkedHashMap<String, List<String>> groupMemberUIDs) {
+        // Has no function here.
+    }
+
+    @Override
+    public void onLoadGroupMap(ArrayList<User> users) {
         // Has no function here.
     }
 

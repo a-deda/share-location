@@ -3,6 +3,7 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,9 +16,11 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import nl.adeda.sharelocation.Helpers.CallbackInterface;
+import nl.adeda.sharelocation.Helpers.CallbackInterfaceGroupList;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.GroupListAdapter;
 import nl.adeda.sharelocation.R;
@@ -26,7 +29,7 @@ import nl.adeda.sharelocation.User;
 /**
  * Created by Antonio on 9-6-2017.
  */
-public class GroupsFragment extends Fragment implements CallbackInterface {
+public class GroupsFragment extends Fragment implements CallbackInterface, CallbackInterfaceGroupList {
 
     ExpandableListView groupList;
     HashMap<String, List<String>> groupMemberUIDs;
@@ -70,10 +73,24 @@ public class GroupsFragment extends Fragment implements CallbackInterface {
     // Sets an adapter on the ExpandableListView containing the names of the groups the
     // user is in, and other users that are in these groups.
     @Override
-    public void onGroupDataCallback(ArrayList<String> groupNames, HashMap<String, List<String>> groupMemberNames, HashMap<String, List<String>> groupMemberUIDs) {
+    public void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames, LinkedHashMap<String, List<String>> groupMemberUIDs) {
+        GroupListAdapter.delegate = this;
         GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), groupNames, groupMemberNames);
         groupList.setAdapter(groupListAdapter);
 
         this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
+    }
+
+    @Override
+    public void onLoadGroupMap(ArrayList<User> users) {
+
+    }
+
+    @Override
+    public void onGroupListClick(int groupPosition) {
+        Object[] keys = groupMemberUIDs.keySet().toArray();
+        List<String> group = groupMemberUIDs.get(keys[groupPosition]); // Put member keys into group
+
+        FirebaseHelper.pullGroupMemberLocations(group);
     }
 }

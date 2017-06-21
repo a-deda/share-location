@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import nl.adeda.sharelocation.DateTime;
@@ -39,8 +40,8 @@ public class FirebaseHelper {
 
     public static CallbackInterface delegate;
 
-    private static final HashMap<String, List<String>> groupsNamesHashMap;
-    private static final HashMap<String, List<String>> groupsUIDHashMap;
+    private static final LinkedHashMap<String, List<String>> groupsNamesHashMap;
+    private static final LinkedHashMap<String, List<String>> groupsUIDHashMap;
     private static int i;
 
 
@@ -50,8 +51,8 @@ public class FirebaseHelper {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         groupDataRef = database.getReference("groupData");
         userDataRef = database.getReference("userData");
-        groupsNamesHashMap = new HashMap<>();
-        groupsUIDHashMap = new HashMap<>();
+        groupsNamesHashMap = new LinkedHashMap<>();
+        groupsUIDHashMap = new LinkedHashMap<>();
         userIds = new ArrayList<>();
     }
 
@@ -207,6 +208,35 @@ public class FirebaseHelper {
             groupMemberUIDs.add((String) groupMember.getValue());
         }
         return groupMemberUIDs;
+    }
+
+    public static void pullGroupMemberLocations(final List<String> memberUIDs) {
+        final ArrayList<User> membersInGroup = new ArrayList<>();
+
+        userDataRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    for (String memberUID : memberUIDs) {
+                        if (memberUID.equals(childSnapshot.getKey())) {
+                            userData = new User();
+                            userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
+                            userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
+                            userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
+                            userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
+                            // userData.setVoornaam((String) childSnapshot.child("userInfo").child("photoURI").getValue());
+                            membersInGroup.add(userData);
+                        }
+                    }
+                }
+                delegate.onLoadGroupMap(membersInGroup);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private static void returnDataForActivityChange(User userData, Activity callingActivity, Class destination) {
