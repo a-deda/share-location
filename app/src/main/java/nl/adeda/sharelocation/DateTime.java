@@ -13,6 +13,14 @@ public class DateTime {
     private int hour;
     private int minute;
 
+    public DateTime() {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+        this.hour = hour;
+        this.minute = minute;
+    }
+
     public void setHour(int hour) {
         this.hour = hour;
     }

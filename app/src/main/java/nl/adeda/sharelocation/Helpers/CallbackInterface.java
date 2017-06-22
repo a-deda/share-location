@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
 
 /**
@@ -13,6 +14,6 @@ import nl.adeda.sharelocation.User;
 
 public interface CallbackInterface {
     void onLoginUserDataCallback(User userData);
-    void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames, LinkedHashMap<String, List<String>> groupMemberUIDs);
+    void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames, LinkedHashMap<String, List<String>> groupMemberUIDs, ArrayList<DateTime> endTimes);
     void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs, User currentUserData);
 }

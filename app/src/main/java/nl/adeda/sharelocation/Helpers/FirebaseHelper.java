@@ -3,13 +3,11 @@ package nl.adeda.sharelocation.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,12 +19,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -44,6 +40,7 @@ public class FirebaseHelper {
     public static DatabaseReference userRef;
     private static ArrayList<String> groupNames;
     private static ArrayList<String> groupMemberUIDs;
+    private static ArrayList<DateTime> endTimes;
 
     private static StorageReference storageRef;
     private static StorageReference userStorageRef;
@@ -170,6 +167,7 @@ public class FirebaseHelper {
     // for all the groups the user is in.
     private static void getGroupInformation(final ArrayList<String> groupKeys) {
         groupNames = new ArrayList<>();
+        endTimes = new ArrayList<>();
 
         i = 0;
 
@@ -180,7 +178,12 @@ public class FirebaseHelper {
                     for (String groupKey : groupKeys) {
                         if (groupKey.equals(childNode.getKey())) {
                             String currentGroupName = (String) childNode.child("groupName").getValue();
+                            DateTime currentDateTime = childNode.child("endTime").getValue(DateTime.class);
+
+
                             groupNames.add(currentGroupName); // Add group name to list
+                            endTimes.add(currentDateTime); // Add DateTime objects to list
+
                             groupMemberUIDs = getGroupMemberUIDs(childNode); // Get all UIDs of current group
                             getGroupMemberNames(groupMemberUIDs, i); // Gets first and last names of users in UID list
                             i++;
@@ -188,7 +191,7 @@ public class FirebaseHelper {
                     }
                 }
 
-                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap); // Callback method in GroupFragment
+                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap, endTimes); // Callback method in GroupFragment
             }
 
             @Override

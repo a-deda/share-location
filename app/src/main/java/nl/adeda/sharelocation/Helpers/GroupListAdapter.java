@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import nl.adeda.sharelocation.DateTime;
+import nl.adeda.sharelocation.NameTime;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
@@ -33,33 +35,38 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
 
     public static CallbackInterfaceGroupList delegate;
     private Context context;
-    private List<String> groupNames;
+    private NameTime nameTime;
     private HashMap<String, List<String>> groupMembers;
 
-    public GroupListAdapter(Context context, List<String> groupNames, HashMap<String, List<String>> groupMembers) {
+    public GroupListAdapter(Context context, NameTime nameTime, HashMap<String, List<String>> groupMembers) {
         this.context = context;
-        this.groupNames = groupNames;
+        this.nameTime = nameTime;
         this.groupMembers = groupMembers;
     }
 
     @Override
     public int getGroupCount() {
-        return groupNames.size();
+        return nameTime.getNames().size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return groupMembers.get(groupNames.get(groupPosition)).size();
+        return groupMembers.get(nameTime.getNames().get(groupPosition)).size();
     }
 
     @Override
-    public Object getGroup(int groupPosition) {
-        return groupNames.get(groupPosition);
+    public Object[] getGroup(int groupPosition) {
+        Object[] objects = new Object[2];
+        objects[0] = nameTime.getNames().get(groupPosition);
+        if (nameTime.getTimes() != null) {
+            objects[1] = nameTime.getTimes().get(groupPosition);
+        }
+        return objects;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return groupMembers.get(this.groupNames.get(groupPosition)).get(childPosition);
+        return groupMembers.get(this.nameTime.getNames().get(groupPosition)).get(childPosition);
     }
 
     @Override
@@ -79,7 +86,8 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String groupNameText = (String) getGroup(groupPosition);
+        String groupNameText = (String) getGroup(groupPosition)[0];
+        DateTime endTime = (DateTime) getGroup(groupPosition)[1];
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -87,9 +95,15 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
         }
 
         TextView groupNameTextView = (TextView) convertView.findViewById(R.id.groups_group_name);
-        TextView groupTimeTextView = (TextView) convertView.findViewById(R.id.groups_group_time_left);
+        TextView endTimeTextView = (TextView) convertView.findViewById(R.id.groups_group_time_left);
 
+        String endTimeString = "";
+        if (endTime != null) {
+            endTimeString = "Tot " + endTime.getDay() + "-" + endTime.getMonth() + "-" + endTime.getYear() + " om " + endTime.getHour() + ":" +
+                    endTime.getMinute();
+        }
         groupNameTextView.setText(groupNameText);
+        endTimeTextView.setText(endTimeString);
 
         Button goToMapViewBtn = (Button) convertView.findViewById(R.id.go_to_map_btn);
         goToMapViewBtn.setOnClickListener(new View.OnClickListener() {

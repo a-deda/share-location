@@ -21,11 +21,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.Helpers.CallbackInterface;
 import nl.adeda.sharelocation.Helpers.CallbackInterfaceGroupList;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.Helpers.GroupListAdapter;
+import nl.adeda.sharelocation.NameTime;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
@@ -76,9 +78,12 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     // Sets an adapter on the ExpandableListView containing the names of the groups the
     // user is in, and other users that are in these groups.
     @Override
-    public void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames, LinkedHashMap<String, List<String>> groupMemberUIDs) {
+    public void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames,
+                                    LinkedHashMap<String, List<String>> groupMemberUIDs, ArrayList<DateTime> endTimes) {
         GroupListAdapter.delegate = this;
-        GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), groupNames, groupMemberNames);
+
+        NameTime nameTime = new NameTime(groupNames, endTimes);
+        GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), nameTime, groupMemberNames);
         groupList.setAdapter(groupListAdapter);
 
         this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
