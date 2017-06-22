@@ -64,7 +64,7 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
             FirebaseHelper.pullFromFirebase(user, 2); // Get users' first and last names
         }
 
-        // TODO (16/6): onItemClick - open KaartFragment with map for group
+        // TODO (16/6): onItemClick - open MapFragment with map for group
 
     }
 
@@ -90,12 +90,13 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs) {
-        KaartFragment mapFragment = new KaartFragment();
+    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs, User currentUserData) {
+        MapFragment mapFragment = new MapFragment();
 
         Bundle arguments = new Bundle();
         arguments.putSerializable("userList", users);
         arguments.putSerializable("userIDs", (Serializable) memberUIDs);
+        arguments.putSerializable("currentUser", currentUserData);
         mapFragment.setArguments(arguments);
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();

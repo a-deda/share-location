@@ -151,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs) {
+    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs, User currentUserData) {
         // Has no function here.
     }
 

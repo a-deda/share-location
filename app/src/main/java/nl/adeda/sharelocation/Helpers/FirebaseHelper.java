@@ -18,11 +18,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -47,15 +49,16 @@ public class FirebaseHelper {
     private static StorageReference userStorageRef;
 
     private static User userData;
+    private static User currentUserData;
     private static ArrayList<String> userIds;
 
     public static CallbackInterface delegate;
     public static CallbackGroupUpdate groupDelegate;
+    public static PhotoInterface photoDelegate;
 
     private static final LinkedHashMap<String, List<String>> groupsNamesHashMap;
     private static final LinkedHashMap<String, List<String>> groupsUIDHashMap;
     private static int i;
-
 
 
     static {
@@ -120,19 +123,7 @@ public class FirebaseHelper {
         userStorageRef = storageRef.child(loggedInUserId);
 
         Uri fileURI = Uri.fromFile(profilePhoto);
-        UploadTask uploadTask = userStorageRef.putFile(fileURI);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // onSuccess
-            }
-        });
+        userStorageRef.putFile(fileURI);
     }
 
     // Pulls personal data for user from Firebase
@@ -245,6 +236,7 @@ public class FirebaseHelper {
 
     public static void pullGroupMemberLocations(final List<String> memberUIDs) {
         final ArrayList<User> membersInGroup = new ArrayList<>();
+        final String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -252,17 +244,24 @@ public class FirebaseHelper {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     for (String memberUID : memberUIDs) {
                         if (memberUID.equals(childSnapshot.getKey())) {
-                            userData = new User();
-                            userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
-                            userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
-                            userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
-                            userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
-                            // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
-                            membersInGroup.add(userData);
+                            if (memberUID.equals(currentUID)) { // Separate the current user from the other users
+                                currentUserData = new User();
+                                currentUserData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
+                                currentUserData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
+                                currentUserData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
+                            } else { // Fill list of other users
+                                userData = new User();
+                                userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
+                                userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
+                                userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
+                                userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
+                                // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
+                                membersInGroup.add(userData);
+                            }
                         }
                     }
                 }
-                delegate.onLoadGroupMap(membersInGroup, memberUIDs);
+                delegate.onLoadGroupMap(membersInGroup, memberUIDs, currentUserData);
             }
 
             @Override
@@ -353,23 +352,32 @@ public class FirebaseHelper {
     public static void updateLocations(final List<String> userIds) {
         final ArrayList<User> membersInGroupUpdate = new ArrayList<>();
 
+        final String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         userDataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     for (String userId : userIds) {
                         if (userId.equals(childSnapshot.getKey())) {
-                            userData = new User();
-                            userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
-                            userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
-                            userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
-                            userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
-                            // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
-                            membersInGroupUpdate.add(userData);
+                            if (userId.equals(currentUID)) { // Separate the current user from the other users
+                                currentUserData = new User();
+                                currentUserData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
+                                currentUserData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
+                                currentUserData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
+                            } else {
+                                userData = new User();
+                                userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
+                                userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
+                                userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
+                                userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
+                                // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
+                                membersInGroupUpdate.add(userData);
+                            }
                         }
                     }
                 }
-                groupDelegate.returnGroupUpdate(membersInGroupUpdate);
+                groupDelegate.returnGroupUpdate(membersInGroupUpdate, currentUserData);
                 membersInGroupUpdate.clear();
             }
 
@@ -378,5 +386,18 @@ public class FirebaseHelper {
 
             }
         });
+    }
+
+    public static void pullProfilePhoto(String loggedInUserId) throws IOException {
+        userStorageRef = storageRef.child(loggedInUserId);
+
+        final File profilePhoto = File.createTempFile("profile", "jpg");
+        userStorageRef.getFile(profilePhoto).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                photoDelegate.returnPhoto(profilePhoto);
+            }
+        });
+
     }
 }

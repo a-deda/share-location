@@ -22,6 +22,7 @@ public class User implements Serializable {
     public double latitude;
     public double longitude;
     public String tijdRefresh;
+    private String distance;
 
     /*
     // Constructors
@@ -107,4 +108,10 @@ public class User implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) { this.distance = distance; }
 }

@@ -3,9 +3,7 @@ package nl.adeda.sharelocation.Activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -25,24 +22,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
-import java.net.URI;
+import java.io.IOException;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
-import nl.adeda.sharelocation.MainActivity_Fragments.ContactFragment;
+import nl.adeda.sharelocation.Helpers.PhotoInterface;
 import nl.adeda.sharelocation.MainActivity_Fragments.GroupsFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
-import nl.adeda.sharelocation.MainActivity_Fragments.KaartFragment;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
 import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, PhotoInterface {
 
     CircleImageView userImage;
+    PhotoInterface delegate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +70,8 @@ public class MainActivity extends AppCompatActivity
 
         String firstName = user.getVoornaam();
         String lastName = user.getAchternaam();
-        String email = loadUser()[0];
+
+        String email = loadUser();
 
         nameField.setText(String.format("%s %s", firstName, lastName));
         emailField.setText(email);
@@ -93,8 +91,6 @@ public class MainActivity extends AppCompatActivity
                 EasyImage.openChooserWithGallery(MainActivity.this, "Foto kiezen", 0);
             }
         });
-
-        //loadUser();
     }
 
     @Override
@@ -108,22 +104,29 @@ public class MainActivity extends AppCompatActivity
 
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 FirebaseHelper.pushProfilePhoto(userId, userPhoto);
-
+                userImage.setImageBitmap(BitmapFactory.decodeFile(userPhoto.getPath()));
             }
         });
     }
 
-    private String[] loadUser() {
+    private String loadUser() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        String[] userData = new String[2];
+        String userEmail = "";
 
         if (firebaseUser != null) {
-            userData[0] = firebaseUser.getEmail();
-            // TODO: Photo
-        }
+            userEmail = firebaseUser.getEmail();
+            String loggedInUserId = firebaseUser.getUid();
 
-        return userData;
+            try {
+                FirebaseHelper.photoDelegate = this;
+                FirebaseHelper.pullProfilePhoto(loggedInUserId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return userEmail;
     }
 
     private void selectMenuItem(MenuItem item) {
@@ -197,5 +200,14 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    @Override
+    public void returnPhoto(File photoFile) {
+        if (photoFile != null) {
+            Bitmap photoBitmap = BitmapFactory.decodeFile(photoFile.getPath());
+            userImage.setImageBitmap(photoBitmap);
+        }
+
     }
 }

@@ -9,5 +9,5 @@ import nl.adeda.sharelocation.User;
  */
 
 public interface CallbackGroupUpdate {
-    void returnGroupUpdate(ArrayList<User> membersInGroupUpdate);
+    void returnGroupUpdate(ArrayList<User> membersInGroupUpdate, User currentUserData);
 }

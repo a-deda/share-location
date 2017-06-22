@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="nl.adeda.sharelocation.MainActivity_Fragments.KaartFragment">
+    tools:context="nl.adeda.sharelocation.MainActivity_Fragments.MapFragment">
 
     <fragment
-        android:id="@+id/kaart"
+        android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.35"
         class="com.google.android.gms.maps.SupportMapFragment"/>
 
     <ListView
-        android:id="@+id/locaties_contacten_lijst"
+        android:id="@+id/overview_contact_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.65"
