@@ -22,7 +22,12 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -102,7 +107,7 @@ public class FirebaseHelper {
                 for (DataSnapshot childNode : dataSnapshot.getChildren()) {
                     for (String user : usersToAdd) {
                         if (user.equals(childNode.getKey())) {
-                            userDataRef.child(childNode.getKey()).child("groups").push().setValue(pushedGroupKey);
+                            userDataRef.child(childNode.getKey()).child("groups").child(pushedGroupKey).setValue(pushedGroupKey);
                         }
                     }
                 }
@@ -180,6 +185,9 @@ public class FirebaseHelper {
                             String currentGroupName = (String) childNode.child("groupName").getValue();
                             DateTime currentDateTime = childNode.child("endTime").getValue(DateTime.class);
 
+                            if (currentDateTime != null) {
+                                groupHasExpired(currentDateTime, groupKey);
+                            }
 
                             groupNames.add(currentGroupName); // Add group name to list
                             endTimes.add(currentDateTime); // Add DateTime objects to list
@@ -401,6 +409,43 @@ public class FirebaseHelper {
                 photoDelegate.returnPhoto(profilePhoto);
             }
         });
+
+    }
+
+    private static void groupHasExpired(DateTime currentDateTime, final String groupKey) {
+        String dateString = String.format("%s-%d-%d %d:%d", currentDateTime.getDay(), currentDateTime.getMonth(),
+                currentDateTime.getYear(), currentDateTime.getHour(), currentDateTime.getMinute());
+
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date = null;
+
+        try {
+            date = dateFormat.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date currentDate = new Date();
+
+        if (date.after(currentDate)) {
+            Log.e("EXP", groupKey + " has not expired yet.");
+        } else {
+            Log.e("EXP", "Group " + groupKey + " has expired.");
+            groupDataRef.child(groupKey).child("members").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot member : dataSnapshot.getChildren()) {
+                        userDataRef.child(member.getValue().toString()).child("groups").child(groupKey).removeValue();
+                    }
+                    groupDataRef.child(groupKey).removeValue();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
 
     }
 }

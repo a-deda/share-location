@@ -125,7 +125,7 @@ public class GroepToevoegenActivity extends AppCompatActivity {
 
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                dateTime = new DateTime(dayOfMonth, month, year);
+                dateTime = new DateTime(dayOfMonth, month + 1, year);
                 showTimePicker(calendar, dateTime, setDateTime);
                 Log.e("DATE", dayOfMonth + "-" + month + "-" + year);
 
