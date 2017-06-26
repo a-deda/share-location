@@ -2,6 +2,7 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -99,9 +100,9 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         MapFragment mapFragment = new MapFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable("userList", users);
+        arguments.putParcelableArrayList("userList", users);
         arguments.putSerializable("userIDs", (Serializable) memberUIDs);
-        arguments.putSerializable("currentUser", currentUserData);
+        arguments.putParcelable("currentUser", currentUserData);
         mapFragment.setArguments(arguments);
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();

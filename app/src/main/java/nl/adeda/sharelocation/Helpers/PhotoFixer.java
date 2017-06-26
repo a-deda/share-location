@@ -1,8 +1,21 @@
 package nl.adeda.sharelocation.Helpers;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+import nl.adeda.sharelocation.Activities.MainActivity;
+
 
 /**
  * Created by Antonio on 8-6-2017.
@@ -10,14 +23,52 @@ import android.graphics.BitmapFactory;
 
 public class PhotoFixer {
 
-    public Bitmap fixPhoto(Resources res, int fileId) {
-        Bitmap photo = BitmapFactory.decodeResource(res, fileId);
+    public static Context context;
+
+    public static File fixPhotoMapMarker(File photoFile, String loggedInUserId) {
+        Bitmap photo = BitmapFactory.decodeFile(photoFile.getPath());
+        Bitmap croppedPhoto;
+
+        if (photo.getWidth() >= photo.getHeight()) {
+            croppedPhoto = Bitmap.createBitmap(photo, photo.getWidth() / 2 - photo.getHeight() / 2,
+                    0, photo.getHeight(), photo.getHeight());
+        } else {
+            croppedPhoto = Bitmap.createBitmap(photo, 0, photo.getHeight() / 2 - photo.getWidth()
+                    / 2,
+                    photo.getWidth(), photo.getWidth());
+        }
+
+        Bitmap resizedPhoto = Bitmap.createScaledBitmap(croppedPhoto, 100, 100, false);
+
+        Bitmap roundedPhoto = makeCircle(resizedPhoto);
+
+        File finalPhoto = new File(context.getCacheDir(),
+                loggedInUserId + ".png");
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = new FileOutputStream(finalPhoto);
+            roundedPhoto.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // TODO: Crop to square aspect ratio
 
         // TODO: Resize to smaller size
 
-        return photo;
+        return finalPhoto;
     }
 
+
+    public static Bitmap makeCircle(Bitmap bitmap) {
+        RoundedBitmapDrawable roundedPhoto = RoundedBitmapDrawableFactory.create(Resources
+                .getSystem(), bitmap);
+
+        roundedPhoto.setCircular(true);
+
+        return roundedPhoto.getBitmap();
+    }
 }

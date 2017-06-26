@@ -27,6 +27,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
+import nl.adeda.sharelocation.Helpers.PhotoFixer;
 import nl.adeda.sharelocation.Helpers.PhotoInterface;
 import nl.adeda.sharelocation.MainActivity_Fragments.GroupsFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity
         // TODO: Get savedInstanceState for application
 
         // Get intent from FirebaseHelper.returnData after login
-        User user = (User) getIntent().getSerializableExtra("userData");
+        User user = getIntent().getExtras().getParcelable("userData");
 
         // Set navigation drawer for current user (data from Firebase)
         TextView nameField = (TextView) navigationHeader.findViewById(R.id.nav_header_name);
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
         userImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                PhotoFixer.context = getApplicationContext();
                 EasyImage.openChooserWithGallery(MainActivity.this, "Foto kiezen", 0);
             }
         });
@@ -118,12 +120,9 @@ public class MainActivity extends AppCompatActivity
             userEmail = firebaseUser.getEmail();
             String loggedInUserId = firebaseUser.getUid();
 
-            try {
-                FirebaseHelper.photoDelegate = this;
-                FirebaseHelper.pullProfilePhoto(loggedInUserId);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            FirebaseHelper.photoDelegate = this;
+            FirebaseHelper.pullProfilePhoto(loggedInUserId, null, null, 0);
 
         }
         return userEmail;
@@ -208,6 +207,12 @@ public class MainActivity extends AppCompatActivity
             Bitmap photoBitmap = BitmapFactory.decodeFile(photoFile.getPath());
             userImage.setImageBitmap(photoBitmap);
         }
+
+    }
+
+    @Override
+    public void returnCurrentUserMarker(User photoFile) {
+        // Not used here.
 
     }
 }
