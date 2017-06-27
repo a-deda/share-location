@@ -27,6 +27,7 @@ public class User implements Parcelable {
     private String distance;
     private Bitmap photo;
     private Bitmap mapPhoto;
+    private String userId;
 
     public User() {}
 
@@ -138,6 +139,14 @@ public class User implements Parcelable {
         dest.writeString(tijdRefresh);
         dest.writeString(distance);
         dest.writeParcelable(photo, flags);
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     /*

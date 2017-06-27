@@ -1,6 +1,7 @@
 package nl.adeda.sharelocation.Helpers;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import nl.adeda.sharelocation.User;
 
@@ -10,6 +11,6 @@ import nl.adeda.sharelocation.User;
 
 public interface PhotoInterface {
     void returnPhoto(File photoFile);
-    void returnCurrentUserMarker(User photoFile);
-
+    void initializeCurrentUserMarker(User userInfo);
+    void initializeOtherUserMarkers(ArrayList<User> initializedUsers);
 }

@@ -1,5 +1,7 @@
 package nl.adeda.sharelocation.Helpers;
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.util.ArrayList;
 
 import nl.adeda.sharelocation.User;
@@ -9,5 +11,5 @@ import nl.adeda.sharelocation.User;
  */
 
 public interface CallbackGroupUpdate {
-    void returnGroupUpdate(ArrayList<User> membersInGroupUpdate, User currentUserData);
+    void returnGroupUpdate(ArrayList<User> membersInGroupUpdate, User currentUserData, ArrayList<Marker> otherUserMarkers, Marker currentMarker);
 }

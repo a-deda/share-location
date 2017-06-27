@@ -2,7 +2,6 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -67,8 +66,6 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
             FirebaseHelper.pullFromFirebase(user, 2); // Get users' first and last names
         }
 
-        // TODO (16/6): onItemClick - open MapFragment with map for group
-
     }
 
     @Override
@@ -96,17 +93,17 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users, List<String> memberUIDs, User currentUserData) {
+    public void onLoadGroupMap(ArrayList<User> users, User currentUserData) {
         MapFragment mapFragment = new MapFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelableArrayList("userList", users);
-        arguments.putSerializable("userIDs", (Serializable) memberUIDs);
         arguments.putParcelable("currentUser", currentUserData);
         mapFragment.setArguments(arguments);
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.content_layout, mapFragment);
+        ft.addToBackStack("MapFragment");
         ft.commit();
     }
 

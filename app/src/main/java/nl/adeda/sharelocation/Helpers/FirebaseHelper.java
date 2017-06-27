@@ -3,13 +3,13 @@ package nl.adeda.sharelocation.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +25,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +33,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import nl.adeda.sharelocation.Activities.MainActivity;
 import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
 
@@ -126,7 +124,7 @@ public class FirebaseHelper {
 
     }
 
-    public static void pushProfilePhoto(@NonNull String loggedInUserId, File profilePhoto) {
+    public static void pushProfilePhoto(@NonNull final String loggedInUserId, File profilePhoto) {
         userStorageRef = storageRef.child(loggedInUserId);
 
         Uri fileURI = Uri.fromFile(profilePhoto);
@@ -137,6 +135,14 @@ public class FirebaseHelper {
                 loggedInUserId);
         Uri fixedPhotoURI = Uri.fromFile(fixedPhoto);
         smallUserStorageRef.putFile(fixedPhotoURI);
+
+        smallUserStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Log.e("URL", uri+"");
+                userDataRef.child(loggedInUserId).child("mapPhotoURL").setValue(uri.toString());
+            }
+        });
     }
 
     // Pulls personal data for user from Firebase
@@ -257,6 +263,7 @@ public class FirebaseHelper {
     }
 
     public static void pullGroupMemberLocations(final List<String> memberUIDs) {
+
         final ArrayList<User> membersInGroup = new ArrayList<>();
         final String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -271,22 +278,20 @@ public class FirebaseHelper {
                                 currentUserData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
                                 currentUserData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
                                 currentUserData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
-                                pullProfilePhoto(currentUID, currentUserData, null, 2);
+                                currentUserData.setUserId(currentUID);
                             } else { // Fill list of other users
                                 userData = new User();
                                 userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
                                 userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
                                 userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
                                 userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
-                                // userData.setPhoto((Bitmap) childSnapshot.child("userInfo").child("photoURI").getValue());
+                                userData.setUserId(memberUID);
                                 membersInGroup.add(userData);
-
-                                pullProfilePhoto(memberUID, userData, membersInGroup, 1);
                             }
                         }
                     }
                 }
-                delegate.onLoadGroupMap(membersInGroup, memberUIDs, currentUserData);
+                delegate.onLoadGroupMap(membersInGroup, currentUserData);
             }
 
             @Override
@@ -374,10 +379,12 @@ public class FirebaseHelper {
         return userData;
     }
 
-    public static void updateLocations(final List<String> userIds) {
+    public static void updateLocations(final List<String> userIds, final ArrayList<Marker> otherUserMarkers, final Marker currentMarker) {
         final ArrayList<User> membersInGroupUpdate = new ArrayList<>();
 
         final String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final int[] index = {0};
+        final boolean[] isLastElement = {false};
 
         userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -391,23 +398,22 @@ public class FirebaseHelper {
                                 currentUserData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
                                 currentUserData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
                                 currentUserData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
-                                pullProfilePhoto(currentUID, currentUserData, null, 2);
+                                currentUserData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
+                                currentUserData.setUserId(currentUID);
                             } else {
                                 userData = new User();
                                 userData.setLatitude((Double) childSnapshot.child("location").child("latitude").getValue());
                                 userData.setLongitude((Double) childSnapshot.child("location").child("longitude").getValue());
                                 userData.setVoornaam((String) childSnapshot.child("userInfo").child("firstName").getValue());
                                 userData.setAchternaam((String) childSnapshot.child("userInfo").child("lastName").getValue());
-
-
-                                pullProfilePhoto(userId, userData, membersInGroupUpdate, 1);
-
-
+                                userData.setUserId(userId);
+                                membersInGroupUpdate.add(userData);
                             }
                         }
                     }
                 }
-                groupDelegate.returnGroupUpdate(membersInGroupUpdate, currentUserData);
+                groupDelegate.returnGroupUpdate(membersInGroupUpdate, currentUserData,
+                        otherUserMarkers, currentMarker);
                 membersInGroupUpdate.clear();
             }
 
@@ -418,12 +424,8 @@ public class FirebaseHelper {
         });
     }
 
-    public static void pullProfilePhoto(String loggedInUserId, final User userData, final ArrayList<User> membersInGroupUpdate, final int returnTo) {
-        if (returnTo == 0) {
-            userStorageRef = storageRef.child(loggedInUserId);
-        } else {
-            userStorageRef = storageRef.child(loggedInUserId).child("map-size");
-        }
+    public static void pullProfilePhoto(String loggedInUserId) {
+        userStorageRef = storageRef.child(loggedInUserId);
 
         File profilePhoto = null;
         String filePath = null;
@@ -445,19 +447,9 @@ public class FirebaseHelper {
         userStorageRef.getFile(profilePhoto).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                if (returnTo == 0) {
-                    photoDelegate.returnPhoto(finalProfilePhoto);
-                } else if (returnTo == 1) {
-                    userData.setPhoto(BitmapFactory.decodeFile(finalFilePath));
-                    membersInGroupUpdate.add(userData);
-                } else if (returnTo == 2) {
-                    userData.setMapPhoto(PhotoFixer.makeCircle(BitmapFactory.decodeFile
-                            (finalFilePath)));
-                    photoDelegate.returnCurrentUserMarker(userData);
-                }
+                photoDelegate.returnPhoto(finalProfilePhoto);
             }
         });
-
     }
 
     private static void groupHasExpired(DateTime currentDateTime, final String groupKey) {
@@ -495,5 +487,84 @@ public class FirebaseHelper {
         }
 
 
+    }
+
+    public static void initializeMapMarkers(final User userData, final boolean isOtherUser,
+                                            final boolean isLastUser, final ArrayList<User> initializedUsers) {
+        // Check if user has added a profile picture
+        storageRef.child(userData.getUserId()).child("map-size").getDownloadUrl
+                ().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                getUserPhoto(userData, isOtherUser, isLastUser, initializedUsers);
+            }
+        }).addOnFailureListener(new OnFailureListener() { // Return user object without photo
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (!isOtherUser) {
+                    photoDelegate.initializeCurrentUserMarker(userData);
+                } else {
+                    if (!isLastUser) {
+                        initializedUsers.add(userData);
+                    } else {
+                        initializedUsers.add(userData);
+                        photoDelegate.initializeOtherUserMarkers(initializedUsers);
+                    }
+                }
+            }
+        });
+    }
+
+    private static void getUserPhoto(final User userData, final boolean isOtherUser, final
+                                     boolean isLastUser, final ArrayList<User> initializedUsers) {
+
+        userStorageRef = storageRef.child(userData.getUserId()).child("map-size");
+
+        File profilePhoto = null;
+        String filePath = null;
+
+        try {
+            profilePhoto = File.createTempFile("profile", ".png");
+            filePath = profilePhoto.getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (profilePhoto == null) {
+            return;
+        }
+
+        final File finalProfilePhoto = profilePhoto;
+
+        userStorageRef.getFile(profilePhoto).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                userData.setMapPhoto(BitmapFactory.decodeFile(finalProfilePhoto.getPath()));
+
+                if (!isOtherUser) {
+                    photoDelegate.initializeCurrentUserMarker(userData);
+                } else {
+                    if (!isLastUser) {
+                        initializedUsers.add(userData);
+                    } else {
+                        initializedUsers.add(userData);
+                        photoDelegate.initializeOtherUserMarkers(initializedUsers);
+                    }
+                }
+            }
+        });
+    }
+
+    public static void getOtherUserMapMarkers(final ArrayList<User> userList) {
+        int i = 0;
+        ArrayList<User> initializedUsers = new ArrayList<>();
+        for (User user : userList) {
+            i++;
+            if (i == userList.size()) {
+                initializeMapMarkers(user, true, true, initializedUsers);
+            } else {
+                initializeMapMarkers(user, true, false, initializedUsers);
+            }
+        }
     }
 }

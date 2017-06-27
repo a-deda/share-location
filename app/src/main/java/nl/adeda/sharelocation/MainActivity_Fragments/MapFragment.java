@@ -5,7 +5,7 @@ import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,6 @@ import android.widget.ListView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -29,7 +28,6 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import nl.adeda.sharelocation.Helpers.CallbackGroupUpdate;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.GPSHelper;
@@ -59,8 +57,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     private User currentUser;
 
     private GoogleMap googleMap;
+    private Marker currentMarker;
 
     private ListView contactList;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,8 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         firebaseUser = firebaseAuth.getCurrentUser();
 
         userList = getArguments().getParcelableArrayList("userList"); // Get information of users in group
-        userIDs = (List<String>) getArguments().getSerializable("userIDs");
-        currentUser = (User) getArguments().getParcelable("currentUser");
+        currentUser = getArguments().getParcelable("currentUser"); // Get information of current user
 
         // TODO: Check if user has any open requests
 
@@ -89,7 +89,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             Display text
         }
          */
-
+        
         // Inflate the layout for this fragment
         return view;
     }
@@ -120,58 +120,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         Location location = gpsHelper.getLocation();
         gpsHelper.locationPusher(location);
 
-        // Put marker for current user on map
-        LatLng currentUserLocation = new LatLng(currentUser.getLatitude(), currentUser
-                .getLongitude());
-
-        Marker currentmarker;
-        if (currentUser.getPhoto() != null) {
-            currentmarker = googleMap.addMarker(new MarkerOptions().position
-                    (currentUserLocation).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap
-                    (currentUser.getPhoto())));
-        } else {
-            currentmarker = googleMap.addMarker(new MarkerOptions().position
-                    (currentUserLocation).anchor(0.5f, 0.5f));
-        }
-
-        currentmarker.setTitle(currentUser.getVoornaam()); // TODO: TESTLINE - REMOVE AFTER USE
-
-        // Put markers for other users on map
-        for (User user : userList) {
-            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
-            if (user.getPhoto() != null) {
-                googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(user.getPhoto())));
-            } else {
-                googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f));
-            }
-            // Calculate distance between users
-            float[] results = new float[1];
-            Location.distanceBetween(currentUser.getLatitude(), currentUser.getLongitude(), user.getLatitude(), user.getLongitude(), results);
-
-            String result = "";
-            if (results[0] > 1000) {
-                result = String.format(Locale.ENGLISH, "%.0f", results[0]/1000) + " km";
-            } else {
-                result = String.format(Locale.ENGLISH, "%.0f", results[0]) + " m";
-            }
-            user.setDistance(result);
-
-            Log.e("DIS", "Distance between " + currentUser.getVoornaam() + " and " + user.getVoornaam() + " is " + results[0] + " meters.");
-        }
-
-        OverviewListAdapter overviewListAdapter = new OverviewListAdapter(getContext(), userList/*, userPhotos*/);
-        contactList.setAdapter(overviewListAdapter);
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                FirebaseHelper.groupDelegate = MapFragment.this;
-                FirebaseHelper.photoDelegate = MapFragment.this;
-                FirebaseHelper.updateLocations(userIDs);
-            }
-        }, 0, INTERVAL);
+        // Get map marker photo for current user
+        FirebaseHelper.photoDelegate = this;
+        FirebaseHelper.initializeMapMarkers(currentUser, false, false, null);
 
     }
 
@@ -180,16 +131,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     }
 
     @Override
-    public void returnGroupUpdate(ArrayList<User> userData, User currentUserData) {
-        // Put marker for current user on map
+    public void returnGroupUpdate(ArrayList<User> userData, User currentUserData, ArrayList<Marker> otherUserMarkers, Marker currentMarker) {
 
+        if (userData == null || currentUserData == null) {
+            // Do nothing
+        } else {
+            updateCurrentMapMarker(currentUserData, currentMarker);
+            updateOtherMapMarkers(userData, otherUserMarkers);
+        }
+    }
 
-
+    private void updateOtherMapMarkers(ArrayList<User> userData, ArrayList<Marker> otherUserMarkers) {
+        int i = 0;
         for (User user : userData) {
             LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
-            Marker marker = googleMap.addMarker(new MarkerOptions().position(userLocation).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromBitmap(user.getPhoto())));
-            marker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
+            otherUserMarkers.get(i).setPosition(userLocation);
+            i++;
         }
+    }
+
+    private void updateCurrentMapMarker(User currentUserData, Marker currentMarker) {
+        LatLng userLocation = new LatLng(currentUserData.getLatitude(), currentUserData
+                .getLongitude());
+
+        currentMarker.setPosition(userLocation);
     }
 
     @Override
@@ -198,21 +163,85 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     }
 
     @Override
-    public void returnCurrentUserMarker(User userData) {
-
+    public void initializeCurrentUserMarker(User userData) {
         LatLng currentUserLocation = new LatLng(userData.getLatitude(), userData.getLongitude());
-        googleMap.clear();
-        Marker currentmarker;
-        if (userData.getMapPhoto() != null) {
+        if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
             Bitmap bitmap = userData.getMapPhoto();
-            currentmarker = googleMap.addMarker(new MarkerOptions()
+            currentMarker = googleMap.addMarker(new MarkerOptions()
                     .position(currentUserLocation)
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-        } else {
-            currentmarker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
+        } else { // Set no photo if it's not present
+            currentMarker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
                     .anchor(0.5f, 0.5f));
-        } // TODO: TESTLINE - REMOVE AFTER USE
-        currentmarker.setTitle(userData.getVoornaam()); // TODO: TESTLINE - REMOVE AFTER USE
+        }
+        currentMarker.setTitle(userData.getVoornaam()); // TODO: TESTLINE - REMOVE AFTER USE
+
+        // Initialize markers for other users
+        FirebaseHelper.getOtherUserMapMarkers(userList);
     }
+
+    @Override
+    public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {
+        ArrayList<Marker> otherUserMarkers = new ArrayList<>();
+        for (User user : initializedUsers) {
+            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
+            Marker otherUserMarker;
+
+            if (user.getMapPhoto() != null) {
+                otherUserMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(userLocation)
+                        .anchor(0.5f, 0.5f)
+                        .icon(BitmapDescriptorFactory.fromBitmap(user.getMapPhoto())));
+            } else {
+                otherUserMarker = googleMap.addMarker(new MarkerOptions().position(userLocation)
+                        .anchor(0.5f, 0.5f));
+            }
+
+            otherUserMarkers.add(otherUserMarker);
+
+            returnDistance(currentUser, user);
+        }
+
+        OverviewListAdapter overviewListAdapter = new OverviewListAdapter(getContext(), userList/*, userPhotos*/);
+        contactList.setAdapter(overviewListAdapter);
+
+        updateUserLocations(otherUserMarkers);
+    }
+
+    private void updateUserLocations(final ArrayList<Marker> otherUserMarkers) {
+        userIDs = new ArrayList<>();
+        userIDs.add(currentUser.getUserId());
+
+        for (User user : userList) {
+            userIDs.add(user.getUserId());
+        }
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                FirebaseHelper.groupDelegate = MapFragment.this;
+                FirebaseHelper.photoDelegate = MapFragment.this;
+                FirebaseHelper.updateLocations(userIDs, otherUserMarkers, currentMarker);
+            }
+        }, 0, INTERVAL);
+    }
+
+    private void returnDistance(User currentUser, User user) {
+        // Calculate distance between users
+        float[] results = new float[1];
+        Location.distanceBetween(currentUser.getLatitude(), currentUser.getLongitude(), user.getLatitude(), user.getLongitude(), results);
+
+        String result = "";
+        if (results[0] > 1000) {
+            result = String.format(Locale.ENGLISH, "%.0f", results[0]/1000) + " km";
+        } else {
+            result = String.format(Locale.ENGLISH, "%.0f", results[0]) + " m";
+        }
+        user.setDistance(result);
+    }
+
+
+
 }

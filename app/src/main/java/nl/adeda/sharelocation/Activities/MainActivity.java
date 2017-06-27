@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
 
 
             FirebaseHelper.photoDelegate = this;
-            FirebaseHelper.pullProfilePhoto(loggedInUserId, null, null, 0);
+            FirebaseHelper.pullProfilePhoto(loggedInUserId);
 
         }
         return userEmail;
@@ -211,8 +211,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void returnCurrentUserMarker(User photoFile) {
+    public void initializeCurrentUserMarker(User photoFile) {
         // Not used here.
-
     }
+
+    @Override
+    public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {
+        // Do nothing.
+    }
+
+
 }
