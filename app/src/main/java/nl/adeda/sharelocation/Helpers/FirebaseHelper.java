@@ -3,13 +3,9 @@ package nl.adeda.sharelocation.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.inputmethodservice.ExtractEditText;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.widget.ListView;
 
@@ -26,14 +22,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,8 +37,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import nl.adeda.sharelocation.Activities.MainActivity;
 import nl.adeda.sharelocation.DateTime;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackGroupUpdate;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackInterface;
+import nl.adeda.sharelocation.Helpers.Interfaces.GroupAddCallback;
+import nl.adeda.sharelocation.Helpers.Interfaces.PhotoInterface;
 import nl.adeda.sharelocation.User;
 
 /**
@@ -67,7 +63,8 @@ public class FirebaseHelper {
 
     private static User userData;
     private static User currentUserData;
-    private static ArrayList<String> userIds;
+    private static User completeUserData;
+    public static ArrayList<String> userIds;
 
     public static CallbackInterface delegate;
     public static CallbackGroupUpdate groupDelegate;
@@ -336,11 +333,16 @@ public class FirebaseHelper {
                     //Log.e("EMAIL", emailAddress);
 
                     if (email.equals(emailAddress)) {
+                        for (String userId : userIds) {
+                            if (userId.equals(child.getKey())) {
+                                groupAddDelegate.addUserToList(null, true);
+                                return;
+                            }
+                        }
+
                         User user = getUserData(child);
                         user.setEmail(emailAddress);
-
-                        groupAddDelegate.addUserToList(user);
-
+                        groupAddDelegate.addUserToList(user, false);
                         userIds.add(child.getKey());
                     }
                 }
@@ -554,12 +556,17 @@ public class FirebaseHelper {
 
         for (User user : initUsers) {
             futureList.add(getUserImage(user));
+
+            Log.e("FUT", "User is added to futureList");
         }
 
         for (Future<?> futureItem : futureList) {
             try {
-                User user = (User) futureItem.get();
-                initializedUsers.add(user);
+                User initializedUser = (User) futureItem.get();
+
+                Log.e("FUT", "futureItem has been gotten from futureList");
+
+                initializedUsers.add(initializedUser);
             } catch (InterruptedException | ExecutionException e) {
                 Log.e("ERR", e.toString());
             }

@@ -6,16 +6,19 @@ import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,12 +31,12 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import nl.adeda.sharelocation.Helpers.CallbackGroupUpdate;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackGroupUpdate;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.Helpers.OverviewListAdapter;
 import nl.adeda.sharelocation.Helpers.PermissionChecker;
-import nl.adeda.sharelocation.Helpers.PhotoInterface;
+import nl.adeda.sharelocation.Helpers.Interfaces.PhotoInterface;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
@@ -47,6 +50,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     private static final LatLng PAR = new LatLng(48.8588377, 2.2775169);
     private static final LatLng TKY = new LatLng(35.6732619, 139.5703014);
 
+    private LatLngBounds.Builder builder;
+
     private static int INTERVAL = 2500;
 
     private Context context;
@@ -54,6 +59,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
+    private ArrayList<User> listUsers;
     private ArrayList<User> userList = new ArrayList<>();
     private List<String> userIDs;
     private User currentUser;
@@ -65,6 +71,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     private String groupName;
 
     private OverviewListAdapter overviewListAdapter;
+
+    private Timer timer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -129,6 +137,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     @Override
     public void initializeCurrentUserMarker(User userData) {
         LatLng currentUserLocation = new LatLng(userData.getLatitude(), userData.getLongitude());
+
+        builder = new LatLngBounds.Builder();
+        builder.include(currentUserLocation);
+
+
         if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
             Bitmap bitmap = userData.getMapPhoto();
             currentMarker = googleMap.addMarker(new MarkerOptions()
@@ -150,7 +163,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {
         ArrayList<Marker> otherUserMarkers = new ArrayList<>();
         ArrayList<Bitmap> userPhotos = new ArrayList<>();
-
+        
         for (User user : initializedUsers) {
             LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
             Marker otherUserMarker;
@@ -166,15 +179,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             }
 
             otherUserMarkers.add(otherUserMarker);
+
+            builder.include(userLocation);
+
             userPhotos.add(user.getMapPhoto());
 
             returnDistance(currentUser, user);
         }
 
-        overviewListAdapter = new OverviewListAdapter(context, initializedUsers);
+        listUsers = initializedUsers;
+        overviewListAdapter = new OverviewListAdapter(context, listUsers);
         contactList.setAdapter(overviewListAdapter);
 
-        //updateUserLocations(otherUserMarkers, initializedUsers);
+        // Zoom to fit all markers
+        LatLngBounds bounds = builder.build();
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+
+
+
+        updateUserLocations(otherUserMarkers, initializedUsers);
     }
 
     private void updateUserLocations(final ArrayList<Marker> otherUserMarkers, final ArrayList<User> initializedUsers) {
@@ -185,10 +208,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             userIDs.add(user.getUserId());
         }
 
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                Log.e("RUN", "MapFragment is running the timer!");
                 FirebaseHelper.groupDelegate = MapFragment.this;
                 FirebaseHelper.photoDelegate = MapFragment.this;
                 if (otherUserMarkers.size() == initializedUsers.size()) {
@@ -200,22 +224,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
 
     @Override
     public void returnGroupUpdate(ArrayList<User> userData, User currentUserData, ArrayList<Marker> otherUserMarkers, Marker currentMarker) {
-
+        Log.e("RUN", "MapFragment is returning group updates");
         if (userData.size() != otherUserMarkers.size() || currentUserData == null) {
             // Do nothing.
         } else {
             updateCurrentMapMarker(currentUserData, currentMarker);
-            updateOtherMapMarkers(userData, otherUserMarkers);
+            updateOtherMapMarkers(currentUserData, userData, otherUserMarkers);
         }
     }
 
-    private void updateOtherMapMarkers(ArrayList<User> userData, ArrayList<Marker> otherUserMarkers) {
+    private void updateOtherMapMarkers(User currentUser, ArrayList<User> userData,
+                                       ArrayList<Marker>
+            otherUserMarkers) {
         int i = 0;
         for (User user : userData) {
             LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
             otherUserMarkers.get(i).setPosition(userLocation);
+            returnDistance(currentUser, user);
+
+            listUsers.get(i).setDistance(user.getDistance());
+
             i++;
         }
+
+        overviewListAdapter.notifyDataSetChanged();
     }
 
     private void updateCurrentMapMarker(User currentUserData, Marker currentMarker) {
@@ -230,10 +262,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         // Not used here.
     }
 
-
-
-
-
     private void returnDistance(User currentUser, User user) {
         // Calculate distance between users
         float[] results = new float[1];
@@ -246,5 +274,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             result = String.format(Locale.ENGLISH, "%.0f", results[0]) + " m";
         }
         user.setDistance(result);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        timer.cancel();
     }
 }

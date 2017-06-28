@@ -37,11 +37,9 @@ public class ContactListAdapter extends ArrayAdapter {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_contact_list, parent, false);
         }
 
-        CircleImageView profielFoto = (CircleImageView) convertView.findViewById(R.id.contact_list_photo);
         TextView naam = (TextView) convertView.findViewById(R.id.contact_list_name);
         TextView email = (TextView) convertView.findViewById(R.id.contact_list_email);
 
-        profielFoto.setImageBitmap(user.getPhoto());
         String completeNaam = user.voornaam + " " + user.achternaam;
 
         naam.setText(completeNaam);

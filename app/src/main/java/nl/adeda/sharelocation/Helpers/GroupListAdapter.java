@@ -1,31 +1,21 @@
 package nl.adeda.sharelocation.Helpers;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.LauncherApps;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.security.acl.Group;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.adeda.sharelocation.DateTime;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackInterfaceGroupList;
 import nl.adeda.sharelocation.NameTime;
 import nl.adeda.sharelocation.R;
-import nl.adeda.sharelocation.User;
 
 /**
  * Created by Antonio on 8-6-2017.

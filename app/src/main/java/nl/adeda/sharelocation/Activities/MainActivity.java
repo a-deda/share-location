@@ -28,7 +28,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.PhotoFixer;
-import nl.adeda.sharelocation.Helpers.PhotoInterface;
+import nl.adeda.sharelocation.Helpers.Interfaces.PhotoInterface;
 import nl.adeda.sharelocation.MainActivity_Fragments.GroupsFragment;
 import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
 import nl.adeda.sharelocation.R;

@@ -1,4 +1,4 @@
-package nl.adeda.sharelocation.Helpers;
+package nl.adeda.sharelocation.Helpers.Interfaces;
 
 import java.io.File;
 import java.util.ArrayList;

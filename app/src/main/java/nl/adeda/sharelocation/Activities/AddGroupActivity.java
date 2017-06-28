@@ -17,14 +17,13 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.Helpers.ContactListAdapter;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
-import nl.adeda.sharelocation.Helpers.GroupAddCallback;
+import nl.adeda.sharelocation.Helpers.Interfaces.GroupAddCallback;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
@@ -67,6 +66,7 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_go_to_time);
 
         userList = new ArrayList<>();
+        FirebaseHelper.userIds = new ArrayList<>();
 
         // OnClickListener for add button
         toevBtn.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +171,11 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
     }
 
     @Override
-    public void addUserToList(User user) {
+    public void addUserToList(User user, boolean isInList) {
+        if (isInList) {
+            Toast.makeText(this, "Gebruiker is al toegevoegd!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (contactListToAdd.getAdapter() == null) { // Set adapter
             ContactListAdapter adapter = new ContactListAdapter(getApplicationContext(), userList);
             contactListToAdd.setAdapter(adapter);

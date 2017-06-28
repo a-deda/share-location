@@ -21,8 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import nl.adeda.sharelocation.DateTime;
-import nl.adeda.sharelocation.Helpers.CallbackInterface;
-import nl.adeda.sharelocation.Helpers.CallbackInterfaceGroupList;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackInterface;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackInterfaceGroupList;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.Helpers.GroupListAdapter;
@@ -98,10 +98,16 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         MapFragment mapFragment = new MapFragment();
 
         Bundle arguments = new Bundle();
+
         arguments.putParcelableArrayList("userList", users);
         arguments.putParcelable("currentUser", currentUserData);
         arguments.putString("groupName", groupName);
-        mapFragment.setArguments(arguments);
+
+        if (mapFragment.getArguments() != null) {
+            mapFragment.getArguments().putAll(arguments);
+        } else {
+            mapFragment.setArguments(arguments);
+        }
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(R.id.content_layout, mapFragment);

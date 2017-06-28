@@ -1,4 +1,4 @@
-package nl.adeda.sharelocation.Helpers;
+package nl.adeda.sharelocation.Helpers.Interfaces;
 
 /**
  * Created by Antonio on 20-6-2017.

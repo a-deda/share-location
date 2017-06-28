@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import nl.adeda.sharelocation.DateTime;
-import nl.adeda.sharelocation.Helpers.CallbackInterface;
+import nl.adeda.sharelocation.Helpers.Interfaces.CallbackInterface;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;

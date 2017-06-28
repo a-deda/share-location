@@ -1,4 +1,4 @@
-package nl.adeda.sharelocation.Helpers;
+package nl.adeda.sharelocation.Helpers.Interfaces;
 
 import nl.adeda.sharelocation.User;
 
@@ -7,5 +7,5 @@ import nl.adeda.sharelocation.User;
  */
 
 public interface GroupAddCallback {
-    void addUserToList(User user);
+    void addUserToList(User user, boolean isInList);
 }

@@ -1,4 +1,4 @@
-package nl.adeda.sharelocation.Helpers;
+package nl.adeda.sharelocation.Helpers.Interfaces;
 
 import com.google.android.gms.maps.model.Marker;
 
