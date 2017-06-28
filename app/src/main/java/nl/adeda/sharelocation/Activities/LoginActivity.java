@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
             setContentView(R.layout.splash_screen);
             // Fetch user data from Firebase
             FirebaseHelper.delegate = this;
-            FirebaseHelper.pullFromFirebase(user, 1);
+            FirebaseHelper.pullFromFirebase(1);
         }
 
     }
@@ -152,7 +152,7 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users, User currentUserData) {
+    public void onLoadGroupMap(ArrayList<User> users, User currentUserData, String groupName) {
         // Has no function here.
     }
 

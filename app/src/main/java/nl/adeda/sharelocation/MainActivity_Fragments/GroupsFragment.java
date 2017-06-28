@@ -15,7 +15,6 @@ import android.widget.ExpandableListView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,6 +37,7 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
 
     ExpandableListView groupList;
     HashMap<String, List<String>> groupMemberUIDs;
+    ArrayList<String> groupNames;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             FirebaseHelper.delegate = this;
-            FirebaseHelper.pullFromFirebase(user, 2); // Get users' first and last names
+            FirebaseHelper.pullFromFirebase(2); // Get users' first and last names
         }
 
     }
@@ -85,6 +85,7 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         groupList.setAdapter(groupListAdapter);
 
         this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
+        this.groupNames = groupNames; // Get list of groupnames
 
         // Get and push location coordinates to Firebase
         GPSHelper gpsHelper = new GPSHelper(getContext());
@@ -93,12 +94,13 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     }
 
     @Override
-    public void onLoadGroupMap(ArrayList<User> users, User currentUserData) {
+    public void onLoadGroupMap(ArrayList<User> users, User currentUserData, String groupName) {
         MapFragment mapFragment = new MapFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelableArrayList("userList", users);
         arguments.putParcelable("currentUser", currentUserData);
+        arguments.putString("groupName", groupName);
         mapFragment.setArguments(arguments);
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -111,7 +113,14 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     public void onGroupListClick(int groupPosition) {
         Object[] keys = groupMemberUIDs.keySet().toArray();
         List<String> group = groupMemberUIDs.get(keys[groupPosition]); // Put member keys into group
+        String groupName = groupNames.get(groupPosition);
 
-        FirebaseHelper.pullGroupMemberLocations(group);
+        FirebaseHelper.pullGroupMemberLocations(group, groupName);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("Groepen");
     }
 }

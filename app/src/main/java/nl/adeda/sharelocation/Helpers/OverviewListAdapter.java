@@ -20,14 +20,13 @@ import nl.adeda.sharelocation.User;
 
 public class OverviewListAdapter extends ArrayAdapter {
 
-    public OverviewListAdapter(Context context, ArrayList<User> users/*, ArrayList<Bitmap> userPhotos*/) {
+    public OverviewListAdapter(Context context, ArrayList<User> users) {
         super(context, 0, users);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         User user = (User) getItem(position);
-        //Bitmap userPhoto = (Bitmap) getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.user_item, parent, false);
@@ -37,7 +36,7 @@ public class OverviewListAdapter extends ArrayAdapter {
         TextView name = (TextView) convertView.findViewById(R.id.overview_contact_name);
         TextView distance = (TextView) convertView.findViewById(R.id.overview_contact_distance);
 
-        //profielFoto.setImageBitmap(userPhoto);
+        profielFoto.setImageBitmap(user.getMapPhoto());
         name.setText(user.getVoornaam() + " " + user.getAchternaam());
         distance.setText(user.getDistance());
 

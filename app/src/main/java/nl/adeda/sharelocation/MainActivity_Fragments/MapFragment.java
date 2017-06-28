@@ -1,11 +1,11 @@
 package nl.adeda.sharelocation.MainActivity_Fragments;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,10 +49,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
 
     private static int INTERVAL = 2500;
 
+    private Context context;
+
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
 
-    private ArrayList<User> userList;
+    private ArrayList<User> userList = new ArrayList<>();
     private List<String> userIDs;
     private User currentUser;
 
@@ -60,8 +62,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     private Marker currentMarker;
 
     private ListView contactList;
+    private String groupName;
 
-
+    private OverviewListAdapter overviewListAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,25 +81,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
 
         userList = getArguments().getParcelableArrayList("userList"); // Get information of users in group
         currentUser = getArguments().getParcelable("currentUser"); // Get information of current user
-
-        // TODO: Check if user has any open requests
+        groupName = getArguments().getString("groupName"); // Get current group name
 
         // TODO: Check if contact list contains contacts
-       contactList = (ListView) view.findViewById(R.id.overview_contact_list);
+        contactList = (ListView) view.findViewById(R.id.overview_contact_list);
 
+        context = getActivity();
         /*
         if (contactList.getAdapter().getCount() == 0) {
             Display text
         }
          */
-        
+
         // Inflate the layout for this fragment
         return view;
     }
 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle("Kaart");
+        getActivity().setTitle(groupName);
 
     }
 
@@ -104,14 +107,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         // When map is loaded, put markers in
-        /*
-        // TEST MARKERS
-        Marker mAMS = googleMap.addMarker(new MarkerOptions().position(AMS).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_1)));
-        Marker mRTD = googleMap.addMarker(new MarkerOptions().position(RTD).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_2)));
-        Marker mALK = googleMap.addMarker(new MarkerOptions().position(ALK).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_3)));
-        Marker mPAR = googleMap.addMarker(new MarkerOptions().position(PAR).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_4)));
-        Marker mTKY = googleMap.addMarker(new MarkerOptions().position(TKY).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory.fromResource(R.mipmap.profile_5)));
-        */
 
         PermissionChecker.locationPermissions(getActivity(), googleMap);
 
@@ -122,7 +117,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
 
         // Get map marker photo for current user
         FirebaseHelper.photoDelegate = this;
-        FirebaseHelper.initializeMapMarkers(currentUser, false, false, null);
+        FirebaseHelper.initializeMapMarkers(currentUser, false);
+        //FirebaseHelper.initializeMapMarkers(currentUser, false, false, null, userList);
 
     }
 
@@ -131,10 +127,82 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     }
 
     @Override
+    public void initializeCurrentUserMarker(User userData) {
+        LatLng currentUserLocation = new LatLng(userData.getLatitude(), userData.getLongitude());
+        if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
+            Bitmap bitmap = userData.getMapPhoto();
+            currentMarker = googleMap.addMarker(new MarkerOptions()
+                    .position(currentUserLocation)
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+        } else { // Set no photo if it's not present
+            currentMarker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
+                    .anchor(0.5f, 0.5f));
+        }
+        currentMarker.setTitle(userData.getVoornaam()); // TODO: TESTLINE - REMOVE AFTER USE
+
+        // Initialize markers for other users
+        ArrayList<User> initializedUsers = FirebaseHelper.getOtherUserMapMarkers(userList);
+        initializeOtherUserMarkers(initializedUsers);
+    }
+
+    @Override
+    public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {
+        ArrayList<Marker> otherUserMarkers = new ArrayList<>();
+        ArrayList<Bitmap> userPhotos = new ArrayList<>();
+
+        for (User user : initializedUsers) {
+            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
+            Marker otherUserMarker;
+
+            if (user.getMapPhoto() != null) {
+                otherUserMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(userLocation)
+                        .anchor(0.5f, 0.5f)
+                        .icon(BitmapDescriptorFactory.fromBitmap(user.getMapPhoto())));
+            } else {
+                otherUserMarker = googleMap.addMarker(new MarkerOptions().position(userLocation)
+                        .anchor(0.5f, 0.5f));
+            }
+
+            otherUserMarkers.add(otherUserMarker);
+            userPhotos.add(user.getMapPhoto());
+
+            returnDistance(currentUser, user);
+        }
+
+        overviewListAdapter = new OverviewListAdapter(context, initializedUsers);
+        contactList.setAdapter(overviewListAdapter);
+
+        //updateUserLocations(otherUserMarkers, initializedUsers);
+    }
+
+    private void updateUserLocations(final ArrayList<Marker> otherUserMarkers, final ArrayList<User> initializedUsers) {
+        userIDs = new ArrayList<>();
+        userIDs.add(currentUser.getUserId());
+
+        for (User user : initializedUsers) {
+            userIDs.add(user.getUserId());
+        }
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                FirebaseHelper.groupDelegate = MapFragment.this;
+                FirebaseHelper.photoDelegate = MapFragment.this;
+                if (otherUserMarkers.size() == initializedUsers.size()) {
+                    FirebaseHelper.updateLocations(userIDs, otherUserMarkers, currentMarker);
+                }
+            }
+        }, 0, INTERVAL);
+    }
+
+    @Override
     public void returnGroupUpdate(ArrayList<User> userData, User currentUserData, ArrayList<Marker> otherUserMarkers, Marker currentMarker) {
 
-        if (userData == null || currentUserData == null) {
-            // Do nothing
+        if (userData.size() != otherUserMarkers.size() || currentUserData == null) {
+            // Do nothing.
         } else {
             updateCurrentMapMarker(currentUserData, currentMarker);
             updateOtherMapMarkers(userData, otherUserMarkers);
@@ -162,71 +230,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         // Not used here.
     }
 
-    @Override
-    public void initializeCurrentUserMarker(User userData) {
-        LatLng currentUserLocation = new LatLng(userData.getLatitude(), userData.getLongitude());
-        if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
-            Bitmap bitmap = userData.getMapPhoto();
-            currentMarker = googleMap.addMarker(new MarkerOptions()
-                    .position(currentUserLocation)
-                    .anchor(0.5f, 0.5f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-        } else { // Set no photo if it's not present
-            currentMarker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
-                    .anchor(0.5f, 0.5f));
-        }
-        currentMarker.setTitle(userData.getVoornaam()); // TODO: TESTLINE - REMOVE AFTER USE
 
-        // Initialize markers for other users
-        FirebaseHelper.getOtherUserMapMarkers(userList);
-    }
 
-    @Override
-    public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {
-        ArrayList<Marker> otherUserMarkers = new ArrayList<>();
-        for (User user : initializedUsers) {
-            LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
-            Marker otherUserMarker;
 
-            if (user.getMapPhoto() != null) {
-                otherUserMarker = googleMap.addMarker(new MarkerOptions()
-                        .position(userLocation)
-                        .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(user.getMapPhoto())));
-            } else {
-                otherUserMarker = googleMap.addMarker(new MarkerOptions().position(userLocation)
-                        .anchor(0.5f, 0.5f));
-            }
-
-            otherUserMarkers.add(otherUserMarker);
-
-            returnDistance(currentUser, user);
-        }
-
-        OverviewListAdapter overviewListAdapter = new OverviewListAdapter(getContext(), userList/*, userPhotos*/);
-        contactList.setAdapter(overviewListAdapter);
-
-        updateUserLocations(otherUserMarkers);
-    }
-
-    private void updateUserLocations(final ArrayList<Marker> otherUserMarkers) {
-        userIDs = new ArrayList<>();
-        userIDs.add(currentUser.getUserId());
-
-        for (User user : userList) {
-            userIDs.add(user.getUserId());
-        }
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                FirebaseHelper.groupDelegate = MapFragment.this;
-                FirebaseHelper.photoDelegate = MapFragment.this;
-                FirebaseHelper.updateLocations(userIDs, otherUserMarkers, currentMarker);
-            }
-        }, 0, INTERVAL);
-    }
 
     private void returnDistance(User currentUser, User user) {
         // Calculate distance between users
@@ -241,7 +247,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         }
         user.setDistance(result);
     }
-
-
-
 }

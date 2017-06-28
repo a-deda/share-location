@@ -69,6 +69,7 @@ public class User implements Parcelable {
     }
 
     public double getLatitude() {
+
         return latitude;
     }
 

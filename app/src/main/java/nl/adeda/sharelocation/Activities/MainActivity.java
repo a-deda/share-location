@@ -158,7 +158,11 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                getSupportFragmentManager().popBackStackImmediate();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_groep_toevoegen) {
             // Start contacten toevoegen
-            Intent intent = new Intent(this, GroepToevoegenActivity.class);
+            Intent intent = new Intent(this, AddGroupActivity.class);
             startActivity(intent);
 
             return true;
@@ -211,9 +215,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void initializeCurrentUserMarker(User photoFile) {
-        // Not used here.
+    public void initializeCurrentUserMarker(User userInfo) {
+
     }
+    /*
+    @Override
+    public void initializeCurrentUserMarker(User photoFile, ArrayList<User> userList) {
+        // Not used here.
+    }*/
 
     @Override
     public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {

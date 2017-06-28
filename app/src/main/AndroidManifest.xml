@@ -28,7 +28,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".Activities.GroepToevoegenActivity"
+            android:name=".Activities.AddGroupActivity"
             android:label="@string/cont_toev"
             android:theme="@style/AppTheme.NoActionBar"/>
 

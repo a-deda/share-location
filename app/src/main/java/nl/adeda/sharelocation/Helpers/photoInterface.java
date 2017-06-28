@@ -11,6 +11,7 @@ import nl.adeda.sharelocation.User;
 
 public interface PhotoInterface {
     void returnPhoto(File photoFile);
+    //void initializeCurrentUserMarker(User userInfo, ArrayList<User> userList);
     void initializeCurrentUserMarker(User userInfo);
     void initializeOtherUserMarkers(ArrayList<User> initializedUsers);
 }

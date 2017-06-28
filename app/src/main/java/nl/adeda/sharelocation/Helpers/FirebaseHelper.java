@@ -3,9 +3,13 @@ package nl.adeda.sharelocation.Helpers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.inputmethodservice.ExtractEditText;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.util.Log;
 import android.widget.ListView;
 
@@ -22,9 +26,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,7 +41,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import nl.adeda.sharelocation.Activities.MainActivity;
 import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
 
@@ -65,6 +77,9 @@ public class FirebaseHelper {
     private static final LinkedHashMap<String, List<String>> groupsUIDHashMap;
     private static int i;
 
+    private static final ArrayList<User> initializedUsers;
+    public static GroupAddCallback groupAddDelegate;
+
 
     static {
         // Initialize variables
@@ -76,6 +91,7 @@ public class FirebaseHelper {
         groupsNamesHashMap = new LinkedHashMap<>();
         groupsUIDHashMap = new LinkedHashMap<>();
         userIds = new ArrayList<>();
+        initializedUsers = new ArrayList<>();
     }
 
     public static void pushToFirebaseOnRegistration(@NonNull FirebaseUser loggedInUser, String[] data) {
@@ -139,15 +155,15 @@ public class FirebaseHelper {
         smallUserStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Log.e("URL", uri+"");
-                userDataRef.child(loggedInUserId).child("mapPhotoURL").setValue(uri.toString());
+                Log.e("URL", uri + "");
+                userDataRef.child("map-photos").child(loggedInUserId).setValue(uri.toString());
             }
         });
     }
 
     // Pulls personal data for user from Firebase
-    public static void pullFromFirebase(@NonNull final FirebaseUser user, final int dataType) {
-        userRef = userDataRef.child(user.getUid());
+    public static void pullFromFirebase(final int dataType) {
+        userRef = userDataRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         userData = new User();
 
@@ -184,7 +200,8 @@ public class FirebaseHelper {
                 Log.e("VEL", "ValueEventListener was cancelled.");
             }
         });
-}
+    }
+
     // Called by pullFromFirebase(), gets group names and group member uIDs
     // for all the groups the user is in.
     private static void getGroupInformation(final ArrayList<String> groupKeys) {
@@ -262,7 +279,8 @@ public class FirebaseHelper {
         return groupMemberUIDs;
     }
 
-    public static void pullGroupMemberLocations(final List<String> memberUIDs) {
+    public static void pullGroupMemberLocations(final List<String> memberUIDs, final String
+            groupName) {
 
         final ArrayList<User> membersInGroup = new ArrayList<>();
         final String currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -291,7 +309,7 @@ public class FirebaseHelper {
                         }
                     }
                 }
-                delegate.onLoadGroupMap(membersInGroup, currentUserData);
+                delegate.onLoadGroupMap(membersInGroup, currentUserData, groupName);
             }
 
             @Override
@@ -308,19 +326,20 @@ public class FirebaseHelper {
         callingActivity.finish();
     }
 
-    public static void addUserIfExists(final String email, final ListView listView, final Context context) {
+    public static void addUserIfExists(final String email) {
         userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String emailAddress = (String) child.child("email").getValue();
 
-                    Log.e("EMAIL", emailAddress);
+                    //Log.e("EMAIL", emailAddress);
 
                     if (email.equals(emailAddress)) {
                         User user = getUserData(child);
                         user.setEmail(emailAddress);
-                        returnDataInList(listView, user, context);
+
+                        groupAddDelegate.addUserToList(user);
 
                         userIds.add(child.getKey());
                     }
@@ -329,7 +348,7 @@ public class FirebaseHelper {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                // Do nothing.
             }
         });
     }
@@ -344,16 +363,6 @@ public class FirebaseHelper {
 
     private static void returnDataInList(ListView listView, User user, Context context) {
 
-        if (listView.getAdapter() == null) {
-            ArrayList<User> userList = new ArrayList<>();
-            ContactListAdapter adapter = new ContactListAdapter(context, userList);
-            listView.setAdapter(adapter);
-            adapter.add(user);
-        } else {
-            ContactListAdapter adapter = (ContactListAdapter) listView.getAdapter();
-            // TODO (16/6): Prevent user from adding same user multiple times.
-            adapter.add(user);
-        }
     }
 
     // Returns a list of uID's, which is filled when group is made.
@@ -485,47 +494,39 @@ public class FirebaseHelper {
                 }
             });
         }
-
-
     }
 
-    public static void initializeMapMarkers(final User userData, final boolean isOtherUser,
-                                            final boolean isLastUser, final ArrayList<User> initializedUsers) {
+    private static Future<User> getUserImage(User user) {
+
+        initializeMapMarkers(user, true);
+
+        return new AsyncResult<>(user);
+    }
+
+    public static void initializeMapMarkers(final User userData, final boolean isOtherUser) {
         // Check if user has added a profile picture
         storageRef.child(userData.getUserId()).child("map-size").getDownloadUrl
                 ().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                getUserPhoto(userData, isOtherUser, isLastUser, initializedUsers);
+                getUserPhoto(userData, isOtherUser);
             }
         }).addOnFailureListener(new OnFailureListener() { // Return user object without photo
             @Override
             public void onFailure(@NonNull Exception e) {
                 if (!isOtherUser) {
                     photoDelegate.initializeCurrentUserMarker(userData);
-                } else {
-                    if (!isLastUser) {
-                        initializedUsers.add(userData);
-                    } else {
-                        initializedUsers.add(userData);
-                        photoDelegate.initializeOtherUserMarkers(initializedUsers);
-                    }
                 }
             }
         });
     }
 
-    private static void getUserPhoto(final User userData, final boolean isOtherUser, final
-                                     boolean isLastUser, final ArrayList<User> initializedUsers) {
-
+    private static void getUserPhoto(final User userData, final boolean isOtherUser) {
         userStorageRef = storageRef.child(userData.getUserId()).child("map-size");
-
         File profilePhoto = null;
-        String filePath = null;
 
         try {
             profilePhoto = File.createTempFile("profile", ".png");
-            filePath = profilePhoto.getPath();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -540,31 +541,33 @@ public class FirebaseHelper {
             @Override
             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                 userData.setMapPhoto(BitmapFactory.decodeFile(finalProfilePhoto.getPath()));
-
                 if (!isOtherUser) {
                     photoDelegate.initializeCurrentUserMarker(userData);
-                } else {
-                    if (!isLastUser) {
-                        initializedUsers.add(userData);
-                    } else {
-                        initializedUsers.add(userData);
-                        photoDelegate.initializeOtherUserMarkers(initializedUsers);
-                    }
                 }
             }
         });
     }
 
-    public static void getOtherUserMapMarkers(final ArrayList<User> userList) {
-        int i = 0;
+    public static ArrayList<User> getOtherUserMapMarkers(final ArrayList<User> initUsers) {
+        ArrayList<Future<?>> futureList = new ArrayList<>();
         ArrayList<User> initializedUsers = new ArrayList<>();
-        for (User user : userList) {
-            i++;
-            if (i == userList.size()) {
-                initializeMapMarkers(user, true, true, initializedUsers);
-            } else {
-                initializeMapMarkers(user, true, false, initializedUsers);
+
+        for (User user : initUsers) {
+            futureList.add(getUserImage(user));
+        }
+
+        for (Future<?> futureItem : futureList) {
+            try {
+                User user = (User) futureItem.get();
+                initializedUsers.add(user);
+            } catch (InterruptedException | ExecutionException e) {
+                Log.e("ERR", e.toString());
             }
         }
+
+        return initializedUsers;
     }
+
+
+
 }

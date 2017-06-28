@@ -17,6 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.65"
-        android:backgroundTint="@color/colorPrimary"/>
+        android:background="@color/colorPrimary"/>
 
 </LinearLayout>

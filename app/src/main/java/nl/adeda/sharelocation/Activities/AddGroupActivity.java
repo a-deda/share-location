@@ -17,22 +17,27 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import nl.adeda.sharelocation.DateTime;
+import nl.adeda.sharelocation.Helpers.ContactListAdapter;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
+import nl.adeda.sharelocation.Helpers.GroupAddCallback;
 import nl.adeda.sharelocation.R;
+import nl.adeda.sharelocation.User;
 
 /**
  * Created by Antonio on 8-6-2017.
  */
 
-public class GroepToevoegenActivity extends AppCompatActivity {
+public class AddGroupActivity extends AppCompatActivity implements GroupAddCallback {
 
     private DateTime dateTime;
     private EditText groupNameField;
+    private ListView contactListToAdd;
+    private ArrayList<User> userList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +63,10 @@ public class GroepToevoegenActivity extends AppCompatActivity {
 
         final EditText emailField = (EditText) findViewById(R.id.contact_to_add);
         final Button toevBtn = (Button) findViewById(R.id.contact_add_btn);
-        final ListView contactListToAdd = (ListView) findViewById(R.id.contactlist_to_add);
+        contactListToAdd = (ListView) findViewById(R.id.contactlist_to_add);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_go_to_time);
+
+        userList = new ArrayList<>();
 
         // OnClickListener for add button
         toevBtn.setOnClickListener(new View.OnClickListener() {
@@ -67,8 +74,9 @@ public class GroepToevoegenActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String email = emailField.getText().toString();
 
+                FirebaseHelper.groupAddDelegate = AddGroupActivity.this;
                 // Check if user that has been typed in exists
-                FirebaseHelper.addUserIfExists(email, contactListToAdd, getApplicationContext());
+                FirebaseHelper.addUserIfExists(email);
             }
         });
 
@@ -96,7 +104,7 @@ public class GroepToevoegenActivity extends AppCompatActivity {
 
             FirebaseHelper.pushToFirebaseOnAddingGroup(groupName, dateTime, usersToAdd);
 
-            Toast.makeText(GroepToevoegenActivity.this, "Groep aangemaakt!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddGroupActivity.this, "Groep aangemaakt!", Toast.LENGTH_SHORT).show();
             finish();
             onBackPressed();
         }
@@ -121,7 +129,7 @@ public class GroepToevoegenActivity extends AppCompatActivity {
         }
 
         DatePickerDialog datePickerDialog;
-        datePickerDialog = new DatePickerDialog(GroepToevoegenActivity.this, new DatePickerDialog.OnDateSetListener() {
+        datePickerDialog = new DatePickerDialog(AddGroupActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -150,7 +158,7 @@ public class GroepToevoegenActivity extends AppCompatActivity {
         }
 
         TimePickerDialog timePickerDialog;
-        timePickerDialog = new TimePickerDialog(GroepToevoegenActivity.this, new TimePickerDialog.OnTimeSetListener() {
+        timePickerDialog = new TimePickerDialog(AddGroupActivity.this, new TimePickerDialog.OnTimeSetListener() {
 
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -162,4 +170,16 @@ public class GroepToevoegenActivity extends AppCompatActivity {
         timePickerDialog.show();
     }
 
+    @Override
+    public void addUserToList(User user) {
+        if (contactListToAdd.getAdapter() == null) { // Set adapter
+            ContactListAdapter adapter = new ContactListAdapter(getApplicationContext(), userList);
+            contactListToAdd.setAdapter(adapter);
+            adapter.add(user);
+        } else { // Keep old adapter
+            ContactListAdapter adapter = (ContactListAdapter) contactListToAdd.getAdapter();
+            // TODO (16/6): Prevent user from adding same user multiple times.
+            adapter.add(user);
+        }
+    }
 }
