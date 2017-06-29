@@ -83,3 +83,19 @@ door het maken van een aparte methode. Het laden van de foto van de gebruiker ze
  normale marker. Ook de afstand tussen gebruikers is verdwenen, dus dit moet worden teruggehaald.
   Daarnaast is de User class Parcelable gemaakt (was Serializable). De oude implementatie leidde
   tot een crash wanneer de app afgesloten werd, maar in de achtergrond wel draaide.
+
+# dag 16 - 27 juni
+Hele dag bezig geweest met het fixen van de kaartweergave. Deze wordt nu goed geladen, maar de
+app crasht wanneer de MapFragment verlaten wordt en er een nieuwe MapFragment geinitiëerd wordt.
+
+# dag 17 - 28 juni
+Na veel problemen met het ophalen van foto's voor de markers uit Firebase, nu in ieder geval voor
+ elkaar gekregen dat de markers voor de goede groep weer worden weergegeven. Hiervoor is een
+ Future gebruikt. De foto's worden echter nog steeds niet geladen op de kaart.
+
+# dag 18 - 29 juni
+Verwijderfunctie voor groepen geïmplementeerd. Er is afgeweken van het idee om dit te regelen met
+ een SwipeView, vanwege tijdsgebrek. Om de gebruiker toch in staat te stellen uit een groep te
+ stappen is er een knop toegevoegd met deze functie. Code opgeschoond, code voorzien van
+ headers en comments, final report geschreven en kleine aanpassingen gemaakt aan de layout van de
+ AddGroupsFragment, de GroupsFragment en de SettingsFragment.
