@@ -8,7 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import com.google.android.gms.maps.GoogleMap;
 
 /**
- * Created by Antonio on 22-6-2017.
+ * Checks for location permissions, as this is necessary for the application to function properly.
  */
 
 public class PermissionChecker {
@@ -30,6 +30,7 @@ public class PermissionChecker {
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             // Set location on Google Map
+            // TODO: delete
             googleMap.setMyLocationEnabled(true);
         }
     }

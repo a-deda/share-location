@@ -72,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    // Check correctness of filled in registration form
     private void formCheck() {
         // Get text from views
         String voornaamText = voornaam.getText().toString().trim();
@@ -109,6 +110,8 @@ public class RegisterActivity extends AppCompatActivity {
             errors += 1;
         }
 
+        // Firebase does not allow passwords to be shorter than 6 characters, so an error message
+        // is displayed when this is the case
         if (passwordText.length() < 6) {
             password.setBackgroundColor(Color.parseColor("#661414"));
             passwordConf.setBackgroundColor(Color.parseColor("#661414"));
@@ -120,6 +123,7 @@ public class RegisterActivity extends AppCompatActivity {
             errors += 1;
         }
 
+        // Check if email address is valid
         if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()){
             email.setBackgroundColor(Color.parseColor("#661414"));
             errors += 1;
@@ -132,6 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
             errors += 1;
         }
 
+        // If there are no errors, register user
         if (errors == 0){
             progressDialog = ProgressDialog.show(this, "", "Registreren...", true);
             String[] data = new String[]{emailText, passwordText, voornaamText, achternaamText};
@@ -139,6 +144,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    // Saves the user credentials in Firebase
     private void register(final String[] data) {
         firebaseAuth.createUserWithEmailAndPassword(data[0], data[1])
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -162,7 +168,7 @@ public class RegisterActivity extends AppCompatActivity {
                     // Load UI & go to MainActivity
                     FirebaseHelper.pullFromFirebase(1);
 
-                } else {
+                } else { // If registration is unsuccessful
                     progressDialog.dismiss();
                     Toast.makeText(RegisterActivity.this, "Er is iets misgegaan. Controleer je gegevens en probeer het opnieuw.", Toast.LENGTH_SHORT).show();
                     Log.w("Registration", task.getException());

@@ -1,7 +1,6 @@
 package nl.adeda.sharelocation.Helpers.Interfaces;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -9,7 +8,8 @@ import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.User;
 
 /**
- * Created by Antonio on 19-6-2017.
+ * Callback interface containing three different methods to return user- and group-related data
+ * that is fetched from Firebase.
  */
 
 public interface CallbackInterface {

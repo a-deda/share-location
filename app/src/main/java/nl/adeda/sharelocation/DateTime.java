@@ -1,7 +1,7 @@
 package nl.adeda.sharelocation;
 
 /**
- * Created by Antonio on 15-6-2017.
+ * Class object that is used for storing the date and time in one place.
  */
 
 public class DateTime {
@@ -13,14 +13,16 @@ public class DateTime {
     private int hour;
     private int minute;
 
-    public DateTime() {
+    public DateTime(int day, int month, int year) {
         this.day = day;
         this.month = month;
         this.year = year;
-        this.hour = hour;
-        this.minute = minute;
     }
 
+    // Constructor without arguments to load Firebase class in
+    public DateTime() {};
+
+    // Setters
     public void setHour(int hour) {
         this.hour = hour;
     }
@@ -29,13 +31,7 @@ public class DateTime {
         this.minute = minute;
     }
 
-    public DateTime(int day, int month, int year) {
-        this.day = day;
-        this.month = month;
-        this.year = year;
-
-    }
-
+    // Getters
     public int getYear() {
         return year;
     }

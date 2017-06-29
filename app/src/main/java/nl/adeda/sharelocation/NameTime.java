@@ -1,12 +1,9 @@
 package nl.adeda.sharelocation;
 
 import java.util.ArrayList;
-import java.util.BitSet;
-
-import nl.adeda.sharelocation.DateTime;
 
 /**
- * Created by Antonio on 22-6-2017.
+ * Class that combines the group names with their expiration times to use in the GroupListAdapter.
  */
 public class NameTime {
 

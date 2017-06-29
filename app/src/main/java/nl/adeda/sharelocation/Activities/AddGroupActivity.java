@@ -2,10 +2,8 @@ package nl.adeda.sharelocation.Activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,11 +28,13 @@ import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
 /**
- * Created by Antonio on 8-6-2017.
+ * The activity that is launched when the user clicks the 'Add Group' button in the actionbar. It
+ * allows users to specify a group name and add users to it using an e-mail address.
  */
 
 public class AddGroupActivity extends AppCompatActivity implements GroupAddCallback {
 
+    // Initialize variables
     private DateTime dateTime;
     private EditText groupNameField;
     private ListView contactListToAdd;
@@ -60,8 +60,8 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
             }
         });
 
+        // Initialize layout elements
         groupNameField = (EditText) findViewById(R.id.group_name);
-
         final EditText emailField = (EditText) findViewById(R.id.contact_to_add);
         final Button toevBtn = (Button) findViewById(R.id.contact_add_btn);
         contactListToAdd = (ListView) findViewById(R.id.contactlist_to_add);
@@ -104,17 +104,18 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
             String groupName = groupNameField.getText().toString();
             ArrayList<String> usersToAdd = FirebaseHelper.returnAddedKeys();
 
+            // Push new group to Firebase
             FirebaseHelper.pushToFirebaseOnAddingGroup(groupName, dateTime, usersToAdd);
 
             Toast.makeText(AddGroupActivity.this, "Groep aangemaakt!", Toast.LENGTH_SHORT).show();
 
             finish();
-            //onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    // Get date and time the user specifies using the Date and TimePickers
     private void showPickers(final DateTime setDateTime) {
         final Calendar calendar = Calendar.getInstance();
 
@@ -144,10 +145,9 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
         }, year, month, day);
 
         datePickerDialog.show();
-
-
     }
 
+    // Called after DatePicker is finished to let the user pick an expiration time
     private void showTimePicker(Calendar calendar, final DateTime dateTime, DateTime setDateTime) {
         int hour, minute;
 
@@ -173,8 +173,11 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
         timePickerDialog.show();
     }
 
+    // Callback method, called from FirebaseHelper.addUserIfExists has verified that the email
+    // address that is typed in actually exists in the database.
     @Override
     public void addUserToList(User user, boolean isInList) {
+        // Check if user is already added to list
         if (isInList) {
             Toast.makeText(this, "Gebruiker is al toegevoegd!", Toast.LENGTH_SHORT).show();
             return;

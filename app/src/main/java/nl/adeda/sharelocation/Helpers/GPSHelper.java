@@ -1,7 +1,6 @@
 package nl.adeda.sharelocation.Helpers;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -18,11 +17,9 @@ import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import nl.adeda.sharelocation.Activities.MainActivity;
-import nl.adeda.sharelocation.User;
-
 /**
- * Created by Antonio on 13-6-2017.
+ * A helper class that is used to get the users' location and calling a method to push it to
+ * Firebase.
  */
 
 public class GPSHelper extends Service implements LocationListener {
@@ -39,6 +36,7 @@ public class GPSHelper extends Service implements LocationListener {
         this.context = context;
     }
 
+    // Check permissions and get location coordinates if possible
     public Location getLocation() {
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
@@ -98,13 +96,11 @@ public class GPSHelper extends Service implements LocationListener {
         return null;
     }
 
+    // Push location information to Firebase
     public void locationPusher(Location currentLocation) {
         if (currentLocation != null) {
             double lat = currentLocation.getLatitude();
             double lon = currentLocation.getLongitude();
-
-            Log.e("Lat: ", "" + lat);
-            Log.e("Long: ", "" + lon);
 
             Double[] data = new Double[]{lat, lon};
 

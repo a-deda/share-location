@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import nl.adeda.sharelocation.User;
 
 /**
- * Created by Antonio on 21-6-2017.
+ * Callback interface that is called when the updated locations for all users are fetched from
+ * Firebase. The method is executed in the MapFragment, where these locations are used to update
+ * the map markers.
  */
 
 public interface CallbackGroupUpdate {

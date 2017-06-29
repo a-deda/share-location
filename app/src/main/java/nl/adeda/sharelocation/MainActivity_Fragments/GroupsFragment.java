@@ -33,7 +33,8 @@ import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
 /**
- * Created by Antonio on 9-6-2017.
+ * Fragment containing an ExpandableListView that displays all groups the user is in. From here,
+ * the MapFragment for each group can be launched.
  */
 public class GroupsFragment extends Fragment implements CallbackInterface, CallbackInterfaceGroupList {
 
@@ -98,6 +99,8 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
 
     }
 
+    // Callback method, called when all user location information is fetched from Firebase. This
+    // information is passed to the MapFragment through a Bundle.
     @Override
     public void onLoadGroupMap(ArrayList<User> users, User currentUserData, String groupName) {
         MapFragment mapFragment = new MapFragment();
@@ -120,15 +123,19 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         ft.commit();
     }
 
+    // Callback method, called when the go-to-map button is pressed. Pulls group member locations
+    // in order to initialize the MapFragment, containing markers on these user locations.
     @Override
     public void onGroupListClick(int groupPosition) {
         Object[] keys = groupMemberUIDs.keySet().toArray();
-        List<String> group = groupMemberUIDs.get(keys[groupPosition]); // Put member keys into group
+        List<String> group = groupMemberUIDs.get(keys[groupPosition]); // Put member keys into list
         String groupName = groupNames.get(groupPosition);
 
+        // Get locations of all group members
         FirebaseHelper.pullGroupMemberLocations(group, groupName);
     }
 
+    // Called by GroupListAdapter when the user presses the groups' delete button.
     @Override
     public void onGroupDelete(int groupPosition, final String groupId) {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -136,13 +143,14 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        FirebaseHelper.deleteUserFromGroup(groupId);
+                        FirebaseHelper.deleteUserFromGroup(groupId); // Delete user from Firebase
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
                 }
             }
         };
 
+        // Show alert with 'yes' and 'no' answer options
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
         alertBuilder.setMessage("Weet je zeker dat je deze groep wilt verlaten?")
                 .setPositiveButton("Ja", dialogClickListener).setNegativeButton("Nee",

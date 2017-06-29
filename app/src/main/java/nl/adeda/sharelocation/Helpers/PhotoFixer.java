@@ -7,18 +7,13 @@ import android.graphics.BitmapFactory;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-
-import nl.adeda.sharelocation.Activities.MainActivity;
 
 
 /**
- * Created by Antonio on 8-6-2017.
+ * Helper class that takes a photo, crops and resizes it and converts it to a File that can be
+ * put in Firebase Storage.
  */
 
 public class PhotoFixer {
@@ -29,6 +24,7 @@ public class PhotoFixer {
         Bitmap photo = BitmapFactory.decodeFile(photoFile.getPath());
         Bitmap croppedPhoto;
 
+        // Crop middle part of photo to a square shape
         if (photo.getWidth() >= photo.getHeight()) {
             croppedPhoto = Bitmap.createBitmap(photo, photo.getWidth() / 2 - photo.getHeight() / 2,
                     0, photo.getHeight(), photo.getHeight());
@@ -57,7 +53,7 @@ public class PhotoFixer {
         return finalPhoto;
     }
 
-
+    // Make photo circular
     public static Bitmap makeCircle(Bitmap bitmap) {
         RoundedBitmapDrawable roundedPhoto = RoundedBitmapDrawableFactory.create(Resources
                 .getSystem(), bitmap);

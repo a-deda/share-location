@@ -19,7 +19,7 @@ import nl.adeda.sharelocation.NameTime;
 import nl.adeda.sharelocation.R;
 
 /**
- * Created by Antonio on 8-6-2017.
+ * Adapter for the ExpandableListView in the GroupsFragment.
  */
 
 public class GroupListAdapter extends BaseExpandableListAdapter {
@@ -51,11 +51,11 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
     @Override
     public Object[] getGroup(int groupPosition) {
         Object[] objects = new Object[3];
-        objects[0] = nameTime.getNames().get(groupPosition);
+        objects[0] = nameTime.getNames().get(groupPosition); // Groupname
         if (nameTime.getTimes() != null) {
-            objects[1] = nameTime.getTimes().get(groupPosition);
+            objects[1] = nameTime.getTimes().get(groupPosition); // Expiration date & time
         }
-        objects[2] = groupIds.get(groupPosition);
+        objects[2] = groupIds.get(groupPosition); // The keys of the group
         return objects;
     }
 
@@ -93,6 +93,7 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
         TextView groupNameTextView = (TextView) convertView.findViewById(R.id.groups_group_name);
         TextView endTimeTextView = (TextView) convertView.findViewById(R.id.groups_group_time_left);
 
+        // Build expiration date & time string
         String endTimeString = "";
         if (endTime != null) {
             endTimeString = "Tot " + endTime.getDay() + "-" + endTime.getMonth() + "-" + endTime.getYear() + " om " + endTime.getHour() + ":" +
@@ -104,6 +105,7 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
         Button goToMapViewBtn = (Button) convertView.findViewById(R.id.go_to_map_btn);
         Button deleteBtn = (Button) convertView.findViewById(R.id.delete_group_btn);
 
+        // OnClickListeners for buttons on Group level (go to map & delete button)
         goToMapViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,7 +132,6 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.group_contact_item, null);
         }
 
-        CircleImageView groupMemberPhotoView = (CircleImageView) convertView.findViewById(R.id.groups_contact_photo);
         TextView groupMemberTextView = (TextView) convertView.findViewById(R.id.groups_contact_name);
 
         groupMemberTextView.setText(groupMemberText);

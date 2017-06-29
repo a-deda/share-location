@@ -52,6 +52,8 @@
                 android:id="@+id/contact_add_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_add_black_24dp"
+                style="?attr/borderlessButtonStyle"
                 android:layout_weight="0.85"/>
 
         </LinearLayout>
@@ -69,6 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
+        android:src="@drawable/ic_alarm_white_24dp"
         app:fabSize="normal"
         android:layout_marginEnd="@dimen/activity_vertical_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"/>

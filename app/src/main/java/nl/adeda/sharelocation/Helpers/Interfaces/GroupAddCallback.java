@@ -3,7 +3,7 @@ package nl.adeda.sharelocation.Helpers.Interfaces;
 import nl.adeda.sharelocation.User;
 
 /**
- * Created by Antonio on 28-6-2017.
+ * Callback interface that is called to add users to the ListView in the AddGroupActivity.
  */
 
 public interface GroupAddCallback {

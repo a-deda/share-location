@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,7 +30,7 @@ import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.Helpers.PhotoFixer;
 import nl.adeda.sharelocation.Helpers.Interfaces.PhotoInterface;
 import nl.adeda.sharelocation.MainActivity_Fragments.GroupsFragment;
-import nl.adeda.sharelocation.MainActivity_Fragments.InstellingenFragment;
+import nl.adeda.sharelocation.MainActivity_Fragments.SettingsFragment;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
@@ -130,8 +128,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void selectMenuItem(MenuItem item) {
-        // TODO: Check if fragment is already running
-
         Fragment fragment = null;
 
         int id = item.getItemId();
@@ -141,7 +137,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new GroupsFragment();
                 break;
             case R.id.nav_instellingen:
-                fragment = new InstellingenFragment();
+                fragment = new SettingsFragment();
                 break;
         }
 
@@ -151,7 +147,6 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
     }
-
 
     @Override
     public void onBackPressed() {
@@ -205,6 +200,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // Callback method, called when user profile photo is loaded, sets it to the ImageView in the
+    // NavigationDrawer.
     @Override
     public void returnPhoto(File photoFile) {
         if (photoFile != null) {
@@ -216,13 +213,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void initializeCurrentUserMarker(User userInfo) {
-
+        // Do nothing.
     }
-    /*
-    @Override
-    public void initializeCurrentUserMarker(User photoFile, ArrayList<User> userList) {
-        // Not used here.
-    }*/
 
     @Override
     public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {

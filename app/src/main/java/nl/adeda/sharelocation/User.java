@@ -1,20 +1,11 @@
 package nl.adeda.sharelocation;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-
-import com.google.android.gms.maps.model.Circle;
-
-import java.io.Serializable;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by Antonio on 8-6-2017.
+ * User class object containing all information that calling classes need from a user.
  */
 public class User implements Parcelable {
 
@@ -29,7 +20,8 @@ public class User implements Parcelable {
     private Bitmap mapPhoto;
     private String userId;
 
-    public User() {}
+    public User() {
+    }
 
     protected User(Parcel in) {
         voornaam = in.readString();
@@ -69,7 +61,6 @@ public class User implements Parcelable {
     }
 
     public double getLatitude() {
-
         return latitude;
     }
 
@@ -77,17 +68,25 @@ public class User implements Parcelable {
         return longitude;
     }
 
-    public String getTijdRefresh() {
-        return tijdRefresh;
+    public Bitmap getMapPhoto() {
+        return mapPhoto;
     }
 
-    // Setters
+    public String getDistance() {
+        return distance;
+    }
 
-    public void setVoornaam(String voornaam) {
+    public String getUserId() {
+        return userId;
+    }
+
+
+    // Setters
+    public void setFirstName(String voornaam) {
         this.voornaam = voornaam;
     }
 
-    public void setAchternaam(String achternaam) {
+    public void setLastName(String achternaam) {
         this.achternaam = achternaam;
     }
 
@@ -99,30 +98,20 @@ public class User implements Parcelable {
         this.longitude = longitude;
     }
 
-    public void setTijdRefresh(String tijdRefresh) {
-        this.tijdRefresh = tijdRefresh;
-    }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getDistance() {
-        return distance;
-    }
-
-    public void setDistance(String distance) { this.distance = distance; }
-
-    public void setPhoto(Bitmap photo) {
-        this.photo = photo;
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
     public void setMapPhoto(Bitmap mapPhoto) {
         this.mapPhoto = mapPhoto;
     }
 
-    public Bitmap getMapPhoto() {
-        return mapPhoto;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -141,41 +130,4 @@ public class User implements Parcelable {
         dest.writeString(distance);
         dest.writeParcelable(photo, flags);
     }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    /*
-    // Constructors
-    public User(@NonNull String voornaam, @NonNull String achternaam) {
-        this.voornaam = voornaam;
-        this.achternaam = achternaam;
-    }
-
-    public User(@NonNull String voornaam, @NonNull String achternaam, Bitmap foto) {
-        this.voornaam = voornaam;
-        this.achternaam = achternaam;
-        this.foto = foto;
-    }
-
-    // Constructor for list with map
-    public User(String voornaam, String achternaam, Bitmap foto, double latitude, double longitude, String tijdRefresh) {
-        this.voornaam = voornaam;
-        this.achternaam = achternaam;
-        this.foto = foto;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.tijdRefresh = tijdRefresh;
-    }
-
-    public User(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-    */
 }

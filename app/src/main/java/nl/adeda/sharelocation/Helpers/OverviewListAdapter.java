@@ -1,7 +1,6 @@
 package nl.adeda.sharelocation.Helpers;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,8 @@ import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
 /**
- * Created by Antonio on 8-6-2017.
+ * Adapter for the overview in the MapFragment. Produces a list of displayed users (except for
+ * the current user), their photo and their distance to the current user.
  */
 
 public class OverviewListAdapter extends ArrayAdapter {
@@ -32,10 +32,12 @@ public class OverviewListAdapter extends ArrayAdapter {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.user_item, parent, false);
         }
 
+        // Initialize views
         CircleImageView profielFoto = (CircleImageView) convertView.findViewById(R.id.overview_contact_photo);
         TextView name = (TextView) convertView.findViewById(R.id.overview_contact_name);
         TextView distance = (TextView) convertView.findViewById(R.id.overview_contact_distance);
 
+        // Set values to views
         profielFoto.setImageBitmap(user.getMapPhoto());
         name.setText(user.getVoornaam() + " " + user.getAchternaam());
         distance.setText(user.getDistance());

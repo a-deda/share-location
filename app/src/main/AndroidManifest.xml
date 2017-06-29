@@ -29,7 +29,7 @@
 
         <activity
             android:name=".Activities.AddGroupActivity"
-            android:label="@string/cont_toev"
+            android:label="Nieuwe groep"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".Activities.LoginActivity">
