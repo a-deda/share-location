@@ -9,7 +9,7 @@ dit vermijdt. De gebruiker kan in deze app een groep aanmaken, waarin de locatie
 Per groep kan dan een eindtijd ingesteld worden, waarop deze zich vanzelf weer verwijdert. De
 bedoeling is dan ook dat deze ook maar tijdelijk gebruikt wordt.
 
-![Screenshot](http://i.imgur.com/JZ6yt6H.jpg)
+![Screenshot](http://i.imgur.com/iK1xoeq.png)
 
 # Technisch design
 
