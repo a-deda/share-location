@@ -60,7 +60,12 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
             }
         });
 
-        // Initialize layout elements
+        initializeLayout();
+    }
+
+    // Initialize views & set onClickListeners
+    private void initializeLayout() {
+        // Initialize views
         groupNameField = (EditText) findViewById(R.id.group_name);
         final EditText emailField = (EditText) findViewById(R.id.contact_to_add);
         final Button toevBtn = (Button) findViewById(R.id.contact_add_btn);

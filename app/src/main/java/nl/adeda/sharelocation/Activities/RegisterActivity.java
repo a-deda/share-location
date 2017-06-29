@@ -22,6 +22,9 @@ import com.google.firebase.auth.FirebaseUser;
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
 
+import static nl.adeda.sharelocation.R.id.signInLink;
+import static nl.adeda.sharelocation.R.id.signUpBtn;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
@@ -31,6 +34,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText email;
     private EditText password;
     private EditText passwordConf;
+
+    private Button signUpBtn;
+    private Button signInLink;
 
     ProgressDialog progressDialog;
 
@@ -45,14 +51,23 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
 
         // Get views
+        getViews();
+
+        // Set onClickListeners
+        setOnClickListeners();
+    }
+
+    private void getViews() {
         voornaam = (EditText) findViewById(R.id.firstName);
         achternaam = (EditText) findViewById(R.id.lastName);
         email = (EditText) findViewById(R.id.emailField);
         password = (EditText) findViewById(R.id.passwordField);
         passwordConf = (EditText) findViewById(R.id.passwordConfirmField);
-        Button signUpBtn = (Button) findViewById(R.id.signUpBtn);
-        Button signInLink = (Button) findViewById(R.id.signInLink);
+        signUpBtn = (Button) findViewById(R.id.signUpBtn);
+        signInLink = (Button) findViewById(R.id.signInLink);
+    }
 
+    private void setOnClickListeners() {
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

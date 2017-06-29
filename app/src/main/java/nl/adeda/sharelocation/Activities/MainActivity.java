@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity
     CircleImageView userImage;
     PhotoInterface delegate;
 
+    NavigationView navigationView;
+    View navigationHeader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +59,16 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        View navigationHeader = navigationView.getHeaderView(0);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationHeader = navigationView.getHeaderView(0);
 
-        // TODO: Get savedInstanceState for application
+        getDataFromIntent();
 
+        initializeDrawer();
+    }
+
+    // Receives data from LoginActivity's intent
+    private void getDataFromIntent() {
         // Get intent from FirebaseHelper.returnData after login
         User user = getIntent().getExtras().getParcelable("userData");
 
@@ -69,16 +77,16 @@ public class MainActivity extends AppCompatActivity
         TextView emailField = (TextView) navigationHeader.findViewById(R.id.nav_header_email);
         userImage = (CircleImageView) navigationHeader.findViewById(R.id.nav_header_photo);
 
-        String firstName = user.getVoornaam();
-        String lastName = user.getAchternaam();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
 
         String email = loadUser();
 
         nameField.setText(String.format("%s %s", firstName, lastName));
         emailField.setText(email);
+    }
 
-        // TODO: Check if a fragment is still open
-
+    private void initializeDrawer() {
         // Set 'group' checked & select
         navigationView.getMenu().getItem(0).setChecked(true);
         MenuItem firstMenuItem = navigationView.getMenu().getItem(0);

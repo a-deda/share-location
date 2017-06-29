@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,19 +125,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         builder = new LatLngBounds.Builder();
         builder.include(currentUserLocation);
 
-        if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
-            Bitmap bitmap = PhotoFixer.makeCircle(userData.getMapPhoto());
-            currentMarker = googleMap.addMarker(new MarkerOptions()
-                    .position(currentUserLocation)
-                    .anchor(0.5f, 0.5f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-        } else { // Set default photo if it's not present
-            currentMarker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
-                    .anchor(0.5f, 0.5f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(
-                            BitmapFactory.decodeResource(getContext().getResources(),
-                                    R.mipmap.anonymous_user), 100, 100, false))));
-        }
+        currentMarker = setMarker(userData, currentUserLocation);
         currentMarker.setTitle("Jij");
 
         // Initialize markers for other users
@@ -154,26 +141,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
             Marker otherUserMarker;
 
-            if (user.getMapPhoto() != null) { // Set photo if it's present
-                Bitmap bitmap = PhotoFixer.makeCircle(user.getMapPhoto());
-                otherUserMarker = googleMap.addMarker(new MarkerOptions()
-                        .position(userLocation)
-                        .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
-            } else { // Set default photo if no photo is present
-                otherUserMarker = googleMap.addMarker(new MarkerOptions().position(userLocation)
-                        .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(
-                                BitmapFactory.decodeResource(getContext().getResources(), R
-                                        .mipmap.anonymous_user), 100, 100, false))));
-            }
-            otherUserMarker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
+            otherUserMarker = setMarker(user, userLocation);
+
+            otherUserMarker.setTitle(user.getFirstName() + " " + user.getLastName());
             otherUserMarkers.add(otherUserMarker);
 
             builder.include(userLocation);
             returnDistance(currentUser, user);
         }
 
+        setContents(initializedUsers, otherUserMarkers);
+    }
+
+    // Set contents for ListView and start location updates
+    private void setContents(ArrayList<User> initializedUsers, ArrayList<Marker> otherUserMarkers) {
         // Set adapter for overview list below the map, containing the user photo (if present),
         // the users' name & the distance to the current logged in user.
         listUsers = initializedUsers;
@@ -188,6 +169,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         updateUserLocations(otherUserMarkers, initializedUsers);
     }
 
+    // Set markers
+    private Marker setMarker(User userData, LatLng currentUserLocation) {
+        Marker marker;
+
+        if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
+            Bitmap bitmap = PhotoFixer.makeCircle(userData.getMapPhoto());
+            marker = googleMap.addMarker(new MarkerOptions()
+                    .position(currentUserLocation)
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
+        } else { // Set default photo if it's not present
+            marker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(
+                            BitmapFactory.decodeResource(getContext().getResources(),
+                                    R.mipmap.anonymous_user), 100, 100, false))));
+        }
+        return marker;
+    }
+
     // Updates all user locations in the specified group at a given interval
     private void updateUserLocations(final ArrayList<Marker> otherUserMarkers, final ArrayList<User> initializedUsers) {
         userIDs = new ArrayList<>();
@@ -198,6 +199,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             userIDs.add(user.getUserId());
         }
 
+        setUpdateTimer(otherUserMarkers, initializedUsers);
+    }
+
+    private void setUpdateTimer(final ArrayList<Marker> otherUserMarkers, final ArrayList<User> initializedUsers) {
         // Fetch user locations with a fixed interval, to prevent starting too many threads.
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {

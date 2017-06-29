@@ -39,7 +39,7 @@ public class OverviewListAdapter extends ArrayAdapter {
 
         // Set values to views
         profielFoto.setImageBitmap(user.getMapPhoto());
-        name.setText(user.getVoornaam() + " " + user.getAchternaam());
+        name.setText(user.getFirstName() + " " + user.getLastName());
         distance.setText(user.getDistance());
 
         return convertView;

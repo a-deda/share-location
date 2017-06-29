@@ -41,7 +41,9 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
 
     private EditText email;
     private EditText password;
-    private EditText passwordConf;
+
+    private Button signInBtn;
+    private Button signUpLink;
 
     ProgressDialog progressDialog;
 
@@ -56,11 +58,20 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
         setContentView(R.layout.activity_login);
 
         // Get views
+        getViews();
+
+        // Set onClickListeners
+        setOnClickListeners();
+    }
+
+    private void getViews() {
         email = (EditText) findViewById(R.id.emailFieldLogin);
         password = (EditText) findViewById(R.id.passwordFieldLogin);
-        Button signInBtn = (Button) findViewById(R.id.signInBtn);
-        Button signUpLink = (Button) findViewById(R.id.signUpLink);
+        signInBtn = (Button) findViewById(R.id.signInBtn);
+        signUpLink = (Button) findViewById(R.id.signUpLink);
+    }
 
+    private void setOnClickListeners() {
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +93,7 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
                 finish();
             }
         });
+
     }
 
     // Checks if the user is already logged in onStart. If so, a splash screen is showed until
@@ -111,8 +123,17 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
         email.setBackgroundColor(Color.parseColor("#212121"));
         password.setBackgroundColor(Color.parseColor("#212121"));
 
-        int errors = 0;
+        int errors = checkEmptyFields(emailText, passwordText);
 
+        // If there are no errors, the user can be logged in
+        if (errors == 0){
+            progressDialog = ProgressDialog.show(this, "", "Inloggen...", true);
+            login(emailText, passwordText);
+        }
+    }
+
+    private int checkEmptyFields(String emailText, String passwordText) {
+        int errors = 0;
         // Check if fields are not empty
         if (emailText.equals("")) {
             email.setBackgroundColor(Color.parseColor("#661414"));
@@ -124,11 +145,8 @@ public class LoginActivity extends AppCompatActivity implements CallbackInterfac
             errors += 1;
         }
 
-        // If there are no errors, the user can be logged in
-        if (errors == 0){
-            progressDialog = ProgressDialog.show(this, "", "Inloggen...", true);
-            login(emailText, passwordText);
-        }
+        return errors;
+
     }
 
     // Logs the user in using the given credentials

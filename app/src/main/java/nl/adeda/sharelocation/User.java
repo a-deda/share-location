@@ -48,11 +48,11 @@ public class User implements Parcelable {
     };
 
     // Getters
-    public String getVoornaam() {
+    public String getFirstName() {
         return voornaam;
     }
 
-    public String getAchternaam() {
+    public String getLastName() {
         return achternaam;
     }
 

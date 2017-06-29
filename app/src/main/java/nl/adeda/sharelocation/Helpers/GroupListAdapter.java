@@ -90,18 +90,13 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.group_item, null);
         }
 
-        TextView groupNameTextView = (TextView) convertView.findViewById(R.id.groups_group_name);
-        TextView endTimeTextView = (TextView) convertView.findViewById(R.id.groups_group_time_left);
+        setTimeString(convertView, groupNameText, endTime);
+        setOnClickListeners(convertView, groupPosition, groupId);
 
-        // Build expiration date & time string
-        String endTimeString = "";
-        if (endTime != null) {
-            endTimeString = "Tot " + endTime.getDay() + "-" + endTime.getMonth() + "-" + endTime.getYear() + " om " + endTime.getHour() + ":" +
-                    endTime.getMinute();
-        }
-        groupNameTextView.setText(groupNameText);
-        endTimeTextView.setText(endTimeString);
+        return convertView;
+    }
 
+    private void setOnClickListeners(View convertView, final int groupPosition, final String groupId) {
         Button goToMapViewBtn = (Button) convertView.findViewById(R.id.go_to_map_btn);
         Button deleteBtn = (Button) convertView.findViewById(R.id.delete_group_btn);
 
@@ -120,7 +115,20 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
             }
         });
 
-        return convertView;
+    }
+
+    private void setTimeString(View convertView, String groupNameText, DateTime endTime) {
+        TextView groupNameTextView = (TextView) convertView.findViewById(R.id.groups_group_name);
+        TextView endTimeTextView = (TextView) convertView.findViewById(R.id.groups_group_time_left);
+
+        // Build expiration date & time string
+        String endTimeString = "";
+        if (endTime != null) {
+            endTimeString = "Tot " + endTime.getDay() + "-" + endTime.getMonth() + "-" + endTime.getYear() + " om " + endTime.getHour() + ":" +
+                    endTime.getMinute();
+        }
+        groupNameTextView.setText(groupNameText);
+        endTimeTextView.setText(endTimeString);
     }
 
     @Override

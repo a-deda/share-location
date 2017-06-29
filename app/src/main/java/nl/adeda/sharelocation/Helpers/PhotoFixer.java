@@ -38,18 +38,9 @@ public class PhotoFixer {
 
         Bitmap roundedPhoto = makeCircle(resizedPhoto);
 
-        File finalPhoto = new File(context.getCacheDir(),
-                loggedInUserId + ".png");
-        FileOutputStream outputStream;
+        // Convert to file
+        File finalPhoto = convertToFile(roundedPhoto, loggedInUserId);
 
-        try {
-            outputStream = new FileOutputStream(finalPhoto);
-            roundedPhoto.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return finalPhoto;
     }
 
@@ -61,5 +52,22 @@ public class PhotoFixer {
         roundedPhoto.setCircular(true);
 
         return roundedPhoto.getBitmap();
+    }
+
+    private static File convertToFile(Bitmap roundedPhoto, String loggedInUserId) {
+        File photoFile = new File(context.getCacheDir(),
+                loggedInUserId + ".png");
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = new FileOutputStream(photoFile);
+            roundedPhoto.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return photoFile;
     }
 }

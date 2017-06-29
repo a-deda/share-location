@@ -45,6 +45,7 @@ public class GPSHelper extends Service implements LocationListener {
 
             if (ActivityCompat.checkSelfPermission(context,
                     Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
                 if (isGPSEnabled) {
                     if (location == null) {
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -111,4 +112,6 @@ public class GPSHelper extends Service implements LocationListener {
 
         }
     }
+
+
 }
