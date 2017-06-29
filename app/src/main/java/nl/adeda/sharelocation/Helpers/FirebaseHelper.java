@@ -187,8 +187,6 @@ public class FirebaseHelper {
                             groupKeys.add(childNode.getValue().toString()); // Add key of group the user is in to ArrayList
                         }
                         getGroupInformation(groupKeys);
-                    case 3: // TODO: Get all data
-                        break;
                 }
             }
 
@@ -230,7 +228,8 @@ public class FirebaseHelper {
                     }
                 }
 
-                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap, endTimes); // Callback method in GroupFragment
+                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap,
+                        endTimes, groupKeys); // Callback method in GroupFragment
             }
 
             @Override
@@ -576,5 +575,52 @@ public class FirebaseHelper {
     }
 
 
+    public static void deleteUserFromGroup(final String groupId) {
+        final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        final DatabaseReference group = groupDataRef.child(groupId);
+
+        group.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.child("members").getChildren()) {
+                    if (ds.getValue().equals(userId)) {
+                        group.child("members").child(ds.getKey()).removeValue();
+                        deleteGroupFromUser(groupId, userId);
+                    }
+                }
+
+                if (dataSnapshot.child("members").getChildrenCount() == 1) {
+                    group.removeValue();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private static void deleteGroupFromUser(final String groupId, String userId) {
+
+        final DatabaseReference currentUserGroupsRef = userDataRef.child(userId).child("groups");
+        currentUserGroupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.getValue().equals(groupId)) {
+                        currentUserGroupsRef.child(ds.getKey()).removeValue();
+                        pullFromFirebase(2);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

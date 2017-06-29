@@ -56,8 +56,6 @@ dependencies {
     compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
     compile 'com.github.jkwiecien:EasyImage:2.0.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
-
     compile 'org.springframework:spring-context:4.3.8.RELEASE'
 }
-
 apply plugin: 'com.google.gms.google-services'

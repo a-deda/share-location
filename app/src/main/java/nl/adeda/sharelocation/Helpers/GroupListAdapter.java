@@ -8,6 +8,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,11 +28,14 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private NameTime nameTime;
     private HashMap<String, List<String>> groupMembers;
+    private ArrayList<String> groupIds;
 
-    public GroupListAdapter(Context context, NameTime nameTime, HashMap<String, List<String>> groupMembers) {
+    public GroupListAdapter(Context context, NameTime nameTime, HashMap<String, List<String>>
+            groupMembers, ArrayList<String> groupIds) {
         this.context = context;
         this.nameTime = nameTime;
         this.groupMembers = groupMembers;
+        this.groupIds = groupIds;
     }
 
     @Override
@@ -46,11 +50,12 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object[] getGroup(int groupPosition) {
-        Object[] objects = new Object[2];
+        Object[] objects = new Object[3];
         objects[0] = nameTime.getNames().get(groupPosition);
         if (nameTime.getTimes() != null) {
             objects[1] = nameTime.getTimes().get(groupPosition);
         }
+        objects[2] = groupIds.get(groupPosition);
         return objects;
     }
 
@@ -78,6 +83,7 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String groupNameText = (String) getGroup(groupPosition)[0];
         DateTime endTime = (DateTime) getGroup(groupPosition)[1];
+        final String groupId = (String) getGroup(groupPosition)[2];
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -96,10 +102,19 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
         endTimeTextView.setText(endTimeString);
 
         Button goToMapViewBtn = (Button) convertView.findViewById(R.id.go_to_map_btn);
+        Button deleteBtn = (Button) convertView.findViewById(R.id.delete_group_btn);
+
         goToMapViewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 delegate.onGroupListClick(groupPosition);
+            }
+        });
+
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                delegate.onGroupDelete(groupPosition, groupId);
             }
         });
 

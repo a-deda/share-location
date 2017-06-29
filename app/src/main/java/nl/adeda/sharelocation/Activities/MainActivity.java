@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -120,7 +122,6 @@ public class MainActivity extends AppCompatActivity
             userEmail = firebaseUser.getEmail();
             String loggedInUserId = firebaseUser.getUid();
 
-
             FirebaseHelper.photoDelegate = this;
             FirebaseHelper.pullProfilePhoto(loggedInUserId);
 
@@ -185,7 +186,6 @@ public class MainActivity extends AppCompatActivity
             // Start contacten toevoegen
             Intent intent = new Intent(this, AddGroupActivity.class);
             startActivity(intent);
-
             return true;
         }
 

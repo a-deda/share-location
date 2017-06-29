@@ -2,6 +2,8 @@ package nl.adeda.sharelocation.MainActivity_Fragments;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -37,6 +39,7 @@ import nl.adeda.sharelocation.Helpers.GPSHelper;
 import nl.adeda.sharelocation.Helpers.OverviewListAdapter;
 import nl.adeda.sharelocation.Helpers.PermissionChecker;
 import nl.adeda.sharelocation.Helpers.Interfaces.PhotoInterface;
+import nl.adeda.sharelocation.Helpers.PhotoFixer;
 import nl.adeda.sharelocation.R;
 import nl.adeda.sharelocation.User;
 
@@ -141,9 +144,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         builder = new LatLngBounds.Builder();
         builder.include(currentUserLocation);
 
-
         if (userData.getMapPhoto() != null) { // Set photo as icon if it's present
-            Bitmap bitmap = userData.getMapPhoto();
+            Bitmap bitmap = PhotoFixer.makeCircle(userData.getMapPhoto());
             currentMarker = googleMap.addMarker(new MarkerOptions()
                     .position(currentUserLocation)
                     .anchor(0.5f, 0.5f)
@@ -152,7 +154,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
             currentMarker = googleMap.addMarker(new MarkerOptions().position(currentUserLocation)
                     .anchor(0.5f, 0.5f));
         }
-        currentMarker.setTitle(userData.getVoornaam()); // TODO: TESTLINE - REMOVE AFTER USE
+        currentMarker.setTitle("Jij"); // TODO: TESTLINE - REMOVE AFTER USE
 
         // Initialize markers for other users
         ArrayList<User> initializedUsers = FirebaseHelper.getOtherUserMapMarkers(userList);
@@ -163,21 +165,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
     public void initializeOtherUserMarkers(ArrayList<User> initializedUsers) {
         ArrayList<Marker> otherUserMarkers = new ArrayList<>();
         ArrayList<Bitmap> userPhotos = new ArrayList<>();
-        
+
         for (User user : initializedUsers) {
             LatLng userLocation = new LatLng(user.getLatitude(), user.getLongitude());
             Marker otherUserMarker;
 
             if (user.getMapPhoto() != null) {
+                Bitmap bitmap = PhotoFixer.makeCircle(user.getMapPhoto());
                 otherUserMarker = googleMap.addMarker(new MarkerOptions()
                         .position(userLocation)
                         .anchor(0.5f, 0.5f)
-                        .icon(BitmapDescriptorFactory.fromBitmap(user.getMapPhoto())));
+                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap)));
             } else {
                 otherUserMarker = googleMap.addMarker(new MarkerOptions().position(userLocation)
-                        .anchor(0.5f, 0.5f));
+                        .anchor(0.5f, 0.5f)
+                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(
+                                BitmapFactory.decodeResource(getContext().getResources(), R
+                                        .mipmap.anonymous_user), 150, 150, false))));
             }
-
+            otherUserMarker.setTitle(user.getVoornaam() + " " + user.getAchternaam());
             otherUserMarkers.add(otherUserMarker);
 
             builder.include(userLocation);
@@ -194,8 +200,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Callbac
         // Zoom to fit all markers
         LatLngBounds bounds = builder.build();
         googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
-
-
 
         updateUserLocations(otherUserMarkers, initializedUsers);
     }

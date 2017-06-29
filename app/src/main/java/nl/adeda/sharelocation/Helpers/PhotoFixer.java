@@ -38,7 +38,7 @@ public class PhotoFixer {
                     photo.getWidth(), photo.getWidth());
         }
 
-        Bitmap resizedPhoto = Bitmap.createScaledBitmap(croppedPhoto, 100, 100, false);
+        Bitmap resizedPhoto = Bitmap.createScaledBitmap(croppedPhoto, 150, 150, false);
 
         Bitmap roundedPhoto = makeCircle(resizedPhoto);
 
@@ -54,11 +54,6 @@ public class PhotoFixer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // TODO: Crop to square aspect ratio
-
-        // TODO: Resize to smaller size
-
         return finalPhoto;
     }
 

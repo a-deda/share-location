@@ -2,8 +2,10 @@ package nl.adeda.sharelocation.Activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -105,8 +107,9 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
             FirebaseHelper.pushToFirebaseOnAddingGroup(groupName, dateTime, usersToAdd);
 
             Toast.makeText(AddGroupActivity.this, "Groep aangemaakt!", Toast.LENGTH_SHORT).show();
+
             finish();
-            onBackPressed();
+            //onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
@@ -182,7 +185,6 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
             adapter.add(user);
         } else { // Keep old adapter
             ContactListAdapter adapter = (ContactListAdapter) contactListToAdd.getAdapter();
-            // TODO (16/6): Prevent user from adding same user multiple times.
             adapter.add(user);
         }
     }

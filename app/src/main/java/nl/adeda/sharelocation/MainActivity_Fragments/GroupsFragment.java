@@ -1,10 +1,12 @@
 package nl.adeda.sharelocation.MainActivity_Fragments;
 
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -77,11 +79,13 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
     // user is in, and other users that are in these groups.
     @Override
     public void onGroupDataCallback(ArrayList<String> groupNames, LinkedHashMap<String, List<String>> groupMemberNames,
-                                    LinkedHashMap<String, List<String>> groupMemberUIDs, ArrayList<DateTime> endTimes) {
+                                    LinkedHashMap<String, List<String>> groupMemberUIDs, ArrayList<DateTime> endTimes, ArrayList<String> groupKeys) {
         GroupListAdapter.delegate = this;
 
+        // Set adapter on ListView
         NameTime nameTime = new NameTime(groupNames, endTimes);
-        GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), nameTime, groupMemberNames);
+        GroupListAdapter groupListAdapter = new GroupListAdapter(getContext(), nameTime,
+                groupMemberNames, groupKeys);
         groupList.setAdapter(groupListAdapter);
 
         this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
@@ -91,6 +95,7 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         GPSHelper gpsHelper = new GPSHelper(getContext());
         Location location = gpsHelper.getLocation();
         gpsHelper.locationPusher(location);
+
     }
 
     @Override
@@ -122,6 +127,26 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
         String groupName = groupNames.get(groupPosition);
 
         FirebaseHelper.pullGroupMemberLocations(group, groupName);
+    }
+
+    @Override
+    public void onGroupDelete(int groupPosition, final String groupId) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        FirebaseHelper.deleteUserFromGroup(groupId);
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+        alertBuilder.setMessage("Weet je zeker dat je deze groep wilt verlaten?")
+                .setPositiveButton("Ja", dialogClickListener).setNegativeButton("Nee",
+                dialogClickListener).show();
     }
 
     @Override

@@ -178,5 +178,4 @@ public class User implements Parcelable {
         this.longitude = longitude;
     }
     */
-
 }
