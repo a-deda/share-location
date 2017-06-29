@@ -61,15 +61,14 @@ public class FirebaseHelper {
 
     private static User userData;
     private static User currentUserData;
-    private static User completeUserData;
     public static ArrayList<String> userIds;
 
     public static CallbackInterface delegate;
     public static CallbackGroupUpdate groupDelegate;
     public static PhotoInterface photoDelegate;
 
-    private static final LinkedHashMap<String, List<String>> groupsNamesHashMap;
-    private static final LinkedHashMap<String, List<String>> groupsUIDHashMap;
+    private static LinkedHashMap<String, List<String>> groupsNamesHashMap;
+    private static LinkedHashMap<String, List<String>> groupsUIDHashMap;
     private static int i;
 
     private static final ArrayList<User> initializedUsers;
@@ -217,14 +216,11 @@ public class FirebaseHelper {
                             endTimes.add(currentDateTime); // Add DateTime objects to list
 
                             groupMemberUIDs = getGroupMemberUIDs(childNode); // Get all UIDs of current group
-                            getGroupMemberNames(groupMemberUIDs, i); // Gets first and last names of users in UID list
+                            getGroupMemberNames(groupMemberUIDs, i, groupKeys); // Gets first and last names of users in UID list
                             i++;
                         }
                     }
                 }
-
-                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap,
-                        endTimes, groupKeys); // Callback method in GroupFragment
             }
 
             @Override
@@ -237,8 +233,10 @@ public class FirebaseHelper {
     // Gets first and last names of users in group index, using their user ID. Puts together a
     // hashmap that can then be used in the GroupsFragment to display all groups and its users in
     // an ExpandableListView.
-    private static void getGroupMemberNames(final ArrayList<String> groupMemberUIDs, final int index) {
+    private static void getGroupMemberNames(final ArrayList<String> groupMemberUIDs, final int index, final ArrayList<String> groupKeys) {
         final ArrayList<String> groupMemberNames = new ArrayList<>();
+        groupsNamesHashMap = new LinkedHashMap<>();
+        groupsUIDHashMap = new LinkedHashMap<>();
 
         userDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -256,6 +254,9 @@ public class FirebaseHelper {
                 }
                 groupsNamesHashMap.put(groupNames.get(index), groupMemberNames); // Put group members in current group (at index)
                 groupsUIDHashMap.put(groupNames.get(index), groupMemberUIDs); // Put group member UIDs in current group (at index)
+
+                delegate.onGroupDataCallback(groupNames, groupsNamesHashMap, groupsUIDHashMap,
+                        endTimes, groupKeys); // Callback method in GroupFragment
             }
 
             @Override

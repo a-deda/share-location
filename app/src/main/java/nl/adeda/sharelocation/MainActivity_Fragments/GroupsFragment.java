@@ -39,7 +39,7 @@ import nl.adeda.sharelocation.User;
 public class GroupsFragment extends Fragment implements CallbackInterface, CallbackInterfaceGroupList {
 
     ExpandableListView groupList;
-    HashMap<String, List<String>> groupMemberUIDs;
+    public static HashMap<String, List<String>> groupMemberUIDs;
     ArrayList<String> groupNames;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,7 +89,8 @@ public class GroupsFragment extends Fragment implements CallbackInterface, Callb
                 groupMemberNames, groupKeys);
         groupList.setAdapter(groupListAdapter);
 
-        this.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
+        GroupsFragment.groupMemberUIDs = groupMemberUIDs; // Get list of groupMemberUIDs
+
         this.groupNames = groupNames; // Get list of groupnames
 
         // Get and push location coordinates to Firebase

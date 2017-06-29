@@ -15,6 +15,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import nl.adeda.sharelocation.DateTime;
 import nl.adeda.sharelocation.Helpers.Interfaces.CallbackInterfaceGroupList;
+import nl.adeda.sharelocation.MainActivity_Fragments.GroupsFragment;
 import nl.adeda.sharelocation.NameTime;
 import nl.adeda.sharelocation.R;
 
@@ -112,6 +113,7 @@ public class GroupListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 delegate.onGroupDelete(groupPosition, groupId);
+                GroupsFragment.groupMemberUIDs = null;
             }
         });
 
