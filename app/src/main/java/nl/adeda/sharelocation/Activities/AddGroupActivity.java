@@ -63,17 +63,24 @@ public class AddGroupActivity extends AppCompatActivity implements GroupAddCallb
         initializeLayout();
     }
 
-    // Initialize views & set onClickListeners
+    // Initialize views
     private void initializeLayout() {
         // Initialize views
         groupNameField = (EditText) findViewById(R.id.group_name);
-        final EditText emailField = (EditText) findViewById(R.id.contact_to_add);
-        final Button toevBtn = (Button) findViewById(R.id.contact_add_btn);
         contactListToAdd = (ListView) findViewById(R.id.contactlist_to_add);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_go_to_time);
 
         userList = new ArrayList<>();
         FirebaseHelper.userIds = new ArrayList<>();
+
+        setOnClickListeners();
+
+    }
+
+    private void setOnClickListeners() {
+        // Initialize views
+        final EditText emailField = (EditText) findViewById(R.id.contact_to_add);
+        final Button toevBtn = (Button) findViewById(R.id.contact_add_btn);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_go_to_time);
 
         // OnClickListener for add button
         toevBtn.setOnClickListener(new View.OnClickListener() {

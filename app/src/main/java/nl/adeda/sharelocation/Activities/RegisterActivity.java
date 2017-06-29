@@ -19,18 +19,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+
 import nl.adeda.sharelocation.Helpers.FirebaseHelper;
 import nl.adeda.sharelocation.R;
-
-import static nl.adeda.sharelocation.R.id.signInLink;
-import static nl.adeda.sharelocation.R.id.signUpBtn;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
 
-    private EditText voornaam;
-    private EditText achternaam;
+    private EditText firstName;
+    private EditText lastName;
     private EditText email;
     private EditText password;
     private EditText passwordConf;
@@ -58,8 +57,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void getViews() {
-        voornaam = (EditText) findViewById(R.id.firstName);
-        achternaam = (EditText) findViewById(R.id.lastName);
+        firstName = (EditText) findViewById(R.id.firstName);
+        lastName = (EditText) findViewById(R.id.lastName);
         email = (EditText) findViewById(R.id.emailField);
         password = (EditText) findViewById(R.id.passwordField);
         passwordConf = (EditText) findViewById(R.id.passwordConfirmField);
@@ -90,14 +89,14 @@ public class RegisterActivity extends AppCompatActivity {
     // Check correctness of filled in registration form
     private void formCheck() {
         // Get text from views
-        String voornaamText = voornaam.getText().toString().trim();
-        String achternaamText = achternaam.getText().toString().trim();
+        String firstNameText = firstName.getText().toString().trim();
+        String lastNameText = lastName.getText().toString().trim();
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         String passwordConfText = passwordConf.getText().toString().trim();
 
-        voornaam.setBackgroundColor(Color.parseColor("#212121"));
-        achternaam.setBackgroundColor(Color.parseColor("#212121"));
+        firstName.setBackgroundColor(Color.parseColor("#212121"));
+        lastName.setBackgroundColor(Color.parseColor("#212121"));
         email.setBackgroundColor(Color.parseColor("#212121"));
         password.setBackgroundColor(Color.parseColor("#212121"));
         passwordConf.setBackgroundColor(Color.parseColor("#212121"));
@@ -105,13 +104,13 @@ public class RegisterActivity extends AppCompatActivity {
         int errors = 0;
 
         // Check if fields are not empty
-        if (voornaamText.equals("")) {
-            voornaam.setBackgroundColor(Color.parseColor("#661414"));
+        if (firstNameText.equals("")) {
+            firstName.setBackgroundColor(Color.parseColor("#661414"));
             errors += 1;
         }
 
-        if (achternaamText.equals("")) {
-            achternaam.setBackgroundColor(Color.parseColor("#661414"));
+        if (lastNameText.equals("")) {
+            lastName.setBackgroundColor(Color.parseColor("#661414"));
             errors += 1;
         }
 
@@ -154,7 +153,7 @@ public class RegisterActivity extends AppCompatActivity {
         // If there are no errors, register user
         if (errors == 0){
             progressDialog = ProgressDialog.show(this, "", "Registreren...", true);
-            String[] data = new String[]{emailText, passwordText, voornaamText, achternaamText};
+            String[] data = new String[]{emailText, passwordText, firstNameText, lastNameText};
             register(data);
         }
     }

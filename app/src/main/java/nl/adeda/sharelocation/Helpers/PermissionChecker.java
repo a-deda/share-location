@@ -25,13 +25,5 @@ public class PermissionChecker {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_LOCATION);
         }
-
-        if (ActivityCompat.checkSelfPermission(activity.getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            // Set location on Google Map
-            // TODO: delete
-            googleMap.setMyLocationEnabled(true);
-        }
     }
 }
